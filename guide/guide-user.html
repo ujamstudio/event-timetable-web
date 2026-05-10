@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>2026 MT 스텝 웹앱 — 사용자 가이드</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { font-family: 'Noto Sans KR', sans-serif; color: #1A1208; line-height: 1.65; font-size: 10.5pt; }
+  body { background: #fff; }
+
+  h1, h2, h3 { font-family: 'Noto Serif KR', serif; color: #1A1208; }
+  h1 { font-size: 28pt; font-weight: 900; letter-spacing: 0.04em; }
+  h2 {
+    font-size: 16pt; font-weight: 800; margin: 18px 0 10px;
+    padding: 8px 12px;
+    background: linear-gradient(90deg, #C9A227, transparent 80%);
+    color: #1A1208;
+    border-left: 4px solid #A0291C;
+    page-break-after: avoid;
+  }
+  h3 { font-size: 12pt; font-weight: 700; margin: 14px 0 6px; color: #A0291C; }
+  p { margin-bottom: 8px; }
+  ul, ol { margin: 6px 0 10px 22px; }
+  li { margin-bottom: 4px; }
+
+  .cover {
+    page-break-after: always;
+    height: 240mm;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    background: linear-gradient(180deg, #F4EDD5 0%, #E0CFA0 100%);
+    border: 2px solid #C9A227;
+    border-radius: 18px;
+    padding: 40px;
+  }
+  .cover-eyebrow { font-family: 'Noto Serif KR', serif; font-size: 11pt; letter-spacing: 0.32em; color: #A0291C; margin-bottom: 14px; }
+  .cover-title { font-family: 'Noto Serif KR', serif; font-size: 30pt; font-weight: 900; letter-spacing: 0.04em; color: #1A1208; margin-bottom: 14px; line-height: 1.25; }
+  .cover-sub { font-size: 14pt; color: #3D2B10; margin-bottom: 6px; font-weight: 700; }
+  .cover-tag { font-size: 10pt; color: #A0291C; letter-spacing: 0.2em; }
+  .cover-flower { font-size: 48pt; margin-bottom: 24px; color: #A0291C; }
+  .cover-meta { font-size: 10pt; color: #6B5530; margin-top: auto; padding-top: 30px; border-top: 1px solid rgba(160,41,28,0.3); width: 100%; }
+
+  section { page-break-inside: avoid; margin-bottom: 22px; }
+  .section-screen { page-break-after: always; }
+
+  .screenshot {
+    display: inline-block;
+    margin: 14px auto;
+  }
+  .screenshot img {
+    display: block;
+    width: 240px;
+    height: auto;
+  }
+  figure { margin: 12px 0; text-align: center; page-break-inside: avoid; }
+  figcaption { font-size: 9.5pt; color: #6B5530; margin-top: 8px; font-style: italic; }
+
+  .phone-pair {
+    display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+    page-break-inside: avoid;
+  }
+
+  .callout {
+    background: #FFF8DC;
+    border-left: 4px solid #C9A227;
+    border-radius: 4px;
+    padding: 10px 14px;
+    margin: 10px 0;
+  }
+  .callout.warn { background: #FFEEE8; border-left-color: #A0291C; }
+  .callout.tip { background: #E8F5E9; border-left-color: #1B5E20; }
+  .callout.info { background: #E8F2FE; border-left-color: #1A4FA0; }
+  .callout-title { font-weight: 700; margin-bottom: 4px; }
+
+  .role-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 9.5pt; }
+  .role-table th, .role-table td { padding: 6px 10px; border: 1px solid #E0CFA0; text-align: left; }
+  .role-table th { background: #F4EDD5; font-weight: 700; }
+
+  .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: middle; border: 1px solid rgba(0,0,0,0.15); }
+
+  .toc { background: #FAF6E8; border: 1px solid #E0CFA0; border-radius: 8px; padding: 16px 22px; margin-bottom: 24px; }
+  .toc h2 { background: none; border: none; padding: 0; margin: 0 0 10px; font-size: 13pt; }
+  .toc ol { margin-left: 20px; }
+  .toc li { margin-bottom: 3px; }
+
+  code { background: #F4EDD5; padding: 1px 5px; border-radius: 3px; font-size: 9.5pt; font-family: monospace; }
+
+  .step-list { counter-reset: step; list-style: none; margin-left: 0; }
+  .step-list li { counter-increment: step; padding-left: 32px; position: relative; margin-bottom: 8px; }
+  .step-list li::before {
+    content: counter(step);
+    position: absolute; left: 0; top: 1px;
+    width: 22px; height: 22px;
+    background: #A0291C; color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 10pt;
+  }
+
+  .footer { margin-top: 30px; padding-top: 14px; border-top: 1px solid #E0CFA0; font-size: 8.5pt; color: #6B5530; text-align: center; }
+  .contact-box {
+    background: #FFF8DC;
+    border: 1.5px solid #C9A227;
+    border-radius: 12px;
+    padding: 14px 20px;
+    margin: 16px 0;
+    text-align: center;
+  }
+  .contact-box .lead { font-weight: 700; color: #A0291C; margin-bottom: 6px; font-size: 11pt; }
+  .contact-box .num { font-size: 13pt; font-weight: 800; color: #1A1208; letter-spacing: 0.04em; }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-flower">✦</div>
+  <div class="cover-eyebrow">2026 SPRING MEMBERSHIP TRAINING</div>
+  <h1 class="cover-title">이리 오너라~<br>업고놀자~</h1>
+  <div class="cover-sub">스텝 웹앱 사용 가이드</div>
+  <div class="cover-tag">— 일반 사용자 편 —</div>
+  <div class="cover-meta">
+    <strong>2026.05.08 (금) – 05.09 (토)</strong><br>
+    스텝 전원 — 본 가이드 숙지 후 행사 임할 것
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>목차</h2>
+  <ol>
+    <li>접속 및 로그인</li>
+    <li>메인 대시보드</li>
+    <li>상세 가이드 (위키)</li>
+    <li>전체 일정 보기</li>
+    <li>비밀번호 변경</li>
+    <li>유의 사항 / FAQ</li>
+  </ol>
+</div>
+
+<!-- 1. ACCESS -->
+<section>
+<h2>1. 접속 및 로그인</h2>
+
+<h3>1-1. 웹 주소</h3>
+<p>스마트폰 브라우저(Safari, Chrome 권장)에서 다음 주소로 접속합니다.</p>
+<div class="callout">
+  <code>https://YOUR-S3-BUCKET.s3.ap-northeast-2.amazonaws.com/index.html</code>
+</div>
+
+<h3>1-2. 로그인 절차</h3>
+<ol class="step-list">
+  <li>본인 이름을 입력합니다 (자동완성 지원).</li>
+  <li>비밀번호를 입력합니다. <strong>최초 비밀번호는 <code>abc123!</code></strong>.</li>
+  <li><strong>입장하기</strong> 버튼을 누릅니다.</li>
+</ol>
+
+<figure>
+  <div class="screenshot"><img src="login.png" alt="로그인 화면"></div>
+  <figcaption>로그인 화면 — 이름과 비밀번호를 입력</figcaption>
+</figure>
+
+<div class="callout warn">
+  <div class="callout-title">⚠ 첫 로그인 직후 비밀번호를 변경해 주세요</div>
+  탑바 우측 ⋯ 메뉴 → 비번변경.
+</div>
+</section>
+
+<!-- 2. DASHBOARD -->
+<section class="section-screen">
+<h2>2. 메인 대시보드</h2>
+
+<p>로그인 후 첫 화면은 <strong>현재 업무 / 다음 내 업무</strong> 두 개의 카드로 구성됩니다.</p>
+
+<figure>
+  <div class="screenshot"><img src="dashboard.png" alt="대시보드"></div>
+  <figcaption>빨간색 = 현재 업무, 남색 = 다음 내 업무</figcaption>
+</figure>
+
+<h3>2-1. 현재 업무 카드 (빨간색)</h3>
+<ul>
+  <li>현재 진행 중인 시간대의 일정명과 본인 담당 업무가 표시됩니다.</li>
+  <li>하단 <strong>남은 시간</strong> 막대로 진행 상황 시각화.</li>
+  <li>본인 업무를 마치면 <strong>완료 표시</strong> 체크박스 클릭.</li>
+  <li>카드 자체를 누르면 상세 가이드(위키)가 열립니다.</li>
+</ul>
+
+<h3>2-2. 다음 내 업무 카드 (남색)</h3>
+<ul>
+  <li>본인이 담당으로 등록된 다음 시간대를 보여줍니다.</li>
+  <li>"X시간 Y분 후 시작" 카운트다운 표시.</li>
+  <li>이 카드도 눌러서 상세 가이드를 미리 확인할 수 있습니다.</li>
+</ul>
+
+<h3>2-3. 상단 진행률 바</h3>
+<p>1일차/2일차 전체 일정 중 현재 어느 시간대인지 표시.</p>
+</section>
+
+<!-- 3. WIKI -->
+<section class="section-screen">
+<h2>3. 상세 가이드 (위키)</h2>
+
+<p>현재 업무 카드 또는 다음 내 업무 카드를 누르면 시트가 열려 해당 시간대의 상세 가이드를 볼 수 있습니다.</p>
+
+<div class="phone-pair">
+  <figure>
+    <div class="screenshot"><img src="detail.png" alt="현재 업무 상세"></div>
+    <figcaption>현재 업무 상세</figcaption>
+  </figure>
+  <figure>
+    <div class="screenshot"><img src="next-detail.png" alt="다음 업무 상세"></div>
+    <figcaption>다음 업무 상세</figcaption>
+  </figure>
+</div>
+
+<h3>3-1. 시트 구성</h3>
+<ul>
+  <li><strong>★ 내 업무</strong>: 본인 직책과 담당 업무 강조.</li>
+  <li><strong>상세 가이드</strong>: 일정 흐름 요약 + 단계별 행동 + ⚠ 주의사항.</li>
+</ul>
+
+<div class="callout tip">
+  <div class="callout-title">💡 활용 팁</div>
+  본인 업무가 시작되기 전에 <strong>다음 내 업무 카드를 미리 눌러서</strong> 가이드를 읽어두면 당황하지 않고 진행할 수 있습니다.
+</div>
+</section>
+
+<!-- 4. TIMETABLE -->
+<section class="section-screen">
+<h2>4. 전체 일정 보기</h2>
+
+<p>대시보드 하단의 <strong>전체 일정 보기 ❯</strong> 버튼을 누르면 1일차/2일차 전체 타임테이블이 펼쳐집니다.</p>
+
+<figure>
+  <div class="screenshot"><img src="timetable.png" alt="타임테이블"></div>
+  <figcaption>전체 타임테이블 — 본인 업무만 강조 표시</figcaption>
+</figure>
+
+<h3>4-1. 보기 옵션</h3>
+<ul>
+  <li><strong>일반 사용자</strong>: 본인 담당 업무만 강조 (담당 없는 시간대는 회색).</li>
+  <li>현재 시간대는 <strong>"지금"</strong> 빨간 라벨로 표시.</li>
+</ul>
+
+<h3>4-2. 일자 전환</h3>
+<p>1일차 / 2일차 탭을 눌러 전환합니다. 행사 당일 자동으로 해당 일자가 활성화됩니다.</p>
+</section>
+
+<!-- 5. PASSWORD -->
+<section>
+<h2>5. 비밀번호 변경</h2>
+
+<ol class="step-list">
+  <li>탑바 우측 ⋯ 메뉴를 누릅니다.</li>
+  <li><strong>비번변경</strong> 선택.</li>
+  <li>현재 비밀번호 → 새 비밀번호 → 확인 순으로 입력.</li>
+  <li><strong>변경하기</strong> 버튼 클릭.</li>
+</ol>
+
+<div class="callout info">
+  <div class="callout-title">🔒 비밀번호 보안</div>
+  비밀번호는 SHA-256 해시로 변환되어 저장되며, 서버에는 평문이 저장되지 않습니다. 분실 시 어드민에게 초기화 요청하세요.
+</div>
+</section>
+
+<!-- 6. FAQ -->
+<section>
+<h2>6. 유의 사항 / FAQ</h2>
+
+<h3>Q. 로그인 직후 "비밀번호가 맞지 않습니다"가 뜹니다.</h3>
+<p>서버 동기화 직후 다시 시도하세요. "서버 연결 중입니다" 메시지가 뜨면 1-2초 대기.</p>
+
+<h3>Q. 비밀번호를 잊었습니다.</h3>
+<p>기획국 Member05에게 초기화 요청.</p>
+
+<h3>Q. 다른 기기에서 같은 계정으로 로그인할 수 있나요?</h3>
+<p>가능합니다. 계정·일정·공지·할일 모두 5초 단위로 자동 동기화.</p>
+
+<h3>Q. 인터넷이 잠시 끊기면?</h3>
+<p>탑바에 "오프라인" 표시가 뜨고, 마지막 동기화된 데이터로 계속 표시. 다시 연결되면 자동 복구.</p>
+
+<h3>Q. 본부석에 보고해야 할 일이 생기면?</h3>
+<p>해당 시간대의 <strong>상세 가이드</strong> 하단 ⚠ 주의사항을 참고하고, 즉시 학생회장(Member36) 또는 부학생회장(Member04)에게 연락.</p>
+
+<div class="callout warn" style="margin-top:20px;">
+  <div class="callout-title">⚠ 행사 당일 가장 중요한 3가지</div>
+  <ol style="margin-top:6px;">
+    <li>본인 조 인원 누락 즉시 보고</li>
+    <li>안전사고 (구토자, 부상자) 즉시 본부석</li>
+    <li>강압적 음주 게임 절대 금지</li>
+  </ol>
+</div>
+</section>
+
+<div class="contact-box">
+  <div class="lead">웹 관련 문의</div>
+  <div class="num">기획국 Member05 · 010-XXXX-XXXX</div>
+</div>
+
+<div class="footer">
+  2026 봄 MT — 이리 오너라~ 업고놀자~ · 스텝 웹앱 사용자 가이드 v2.0
+</div>
+
+</body>
+</html>

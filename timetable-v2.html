@@ -1,0 +1,4215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>2026 MT 스텝 타임테이블 — 조선의 향연</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Base ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --hanji:        #F5EDD6;
+  --hanji-dark:   #EDE0C0;
+  --hanji-darker: #E0CFA0;
+  --wood-dark:    #2C1A0E;
+  --wood-deeper:  #1A0A04;
+  --red:          #A0291C;
+  --red-light:    #C94030;
+  --gold:         #C9A227;
+  --gold-light:   #E8C050;
+  --navy:         #1A2744;
+  --navy-light:   #2A3D6A;
+  --ink:          #1A1208;
+  --ink-light:    #3D2B10;
+  --gray-muted:   #8A7A5A;
+  --app-bg:       #0F0A14;
+  --app-bg-2:     #1A1208;
+  --tt-bg:        #F4EDD5;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  height: 100%;
+}
+
+body {
+  font-family: 'Noto Serif KR', 'Malgun Gothic', serif;
+  background: var(--app-bg);
+  color: var(--ink);
+  height: 100%;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════════
+   TOP BAR — frosted glass
+   ═══════════════════════════════════════════ */
+.top-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 64px;
+  background: rgba(14, 8, 4, 0.82);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(201,162,39,0.18);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 10px;
+  z-index: 100;
+  padding-top: env(safe-area-inset-top, 0);
+}
+.top-bar.hidden { display: none; }
+
+.top-bar-logo {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: rgba(245,237,214,0.92);
+  letter-spacing: 0.07em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.top-bar-logo span { color: var(--gold); }
+
+/* ─── 명패 (탑바 중앙) ─── */
+.top-bar-user {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 4px;
+}
+.tbu-dept {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: rgba(201,162,39,0.62);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.tbu-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tbu-name {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: rgba(245,237,214,0.95);
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+}
+.tbu-badge {
+  font-size: 0.56rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.tbu-badge.선발대 { background: rgba(160,41,28,0.28); color: #F09080; border: 1px solid rgba(160,41,28,0.35); }
+.tbu-badge.후발대 { background: rgba(26,39,68,0.4);  color: #8090C0; border: 1px solid rgba(42,61,106,0.45); }
+
+.top-bar-logout {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(245,237,214,0.48);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(245,237,214,0.14);
+  padding: 6px 14px;
+  min-height: 32px;
+  border-radius: 999px;
+  cursor: pointer;
+  letter-spacing: 0.07em;
+  white-space: nowrap;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s;
+}
+.top-bar-logout:active { background: rgba(201,162,39,0.14); border-color: rgba(201,162,39,0.4); color: var(--gold); }
+
+/* ═══════════════════════════════════════════
+   DASHBOARD
+   ═══════════════════════════════════════════ */
+.dashboard {
+  position: fixed;
+  inset: 0;
+  padding-top: 64px;
+  display: flex;
+  flex-direction: column;
+  z-index: 90;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(160,41,28,0.15), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(26,39,68,0.18), transparent 60%),
+    var(--app-bg);
+}
+
+/* ─── Day progress strip ─── */
+.day-progress {
+  flex-shrink: 0;
+  margin: 0 14px 10px;
+  padding: 9px 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(201,162,39,0.16);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.day-progress.hidden { display: none; }
+.dp-label {
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: rgba(201,162,39,0.78);
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+.dp-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+.dp-fill {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  background: linear-gradient(90deg, var(--gold), var(--red-light));
+  border-radius: 999px;
+  transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+.dp-count {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: rgba(245,237,214,0.7);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.dashboard.hidden { display: none; }
+
+.dash-cards {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  padding: 14px 14px 0;
+  gap: 10px;
+}
+
+/* ─── Big Cards ─── */
+.big-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 20px 18px;
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.current-card {
+  flex: 1.65;
+  background: linear-gradient(145deg, #480A06 0%, #7A1A10 45%, #591210 100%);
+  box-shadow: 0 8px 32px rgba(120,20,12,0.35), inset 0 1px 0 rgba(255,255,255,0.07);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.current-card:active {
+  transform: scale(0.992);
+  box-shadow: 0 4px 20px rgba(120,20,12,0.4), inset 0 1px 0 rgba(255,255,255,0.07);
+}
+.current-card.no-tap {
+  cursor: default;
+}
+.current-card.no-tap:active { transform: none; }
+
+/* "tap for detail" hint chevron on current card */
+.bc-tap-hint {
+  position: absolute;
+  bottom: 14px; right: 14px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+  display: flex; align-items: center; gap: 4px;
+  pointer-events: none;
+}
+.bc-tap-hint .chev { font-size: 0.85rem; opacity: 0.85; }
+.current-card.no-tap .bc-tap-hint { display: none; }
+
+/* ─── Detail sheet (current task guide) ─── */
+.detail-sheet {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.62);
+  backdrop-filter: blur(8px);
+  z-index: 260;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+.detail-sheet.open { display: flex; }
+.detail-sheet-inner {
+  width: 100%;
+  max-width: 540px;
+  background: linear-gradient(180deg, #FFFCF0 0%, #F4EDD5 100%);
+  border-top: 2px solid rgba(201,162,39,0.4);
+  border-radius: 22px 22px 0 0;
+  padding: 0;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  animation: sheetUp 0.32s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+}
+.detail-handle {
+  width: 36px; height: 4px;
+  background: rgba(0,0,0,0.18);
+  border-radius: 999px;
+  margin: 8px auto 0;
+  flex-shrink: 0;
+}
+.detail-sheet-hd {
+  padding: 14px 20px 12px;
+  border-bottom: 1px solid rgba(201,162,39,0.22);
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.detail-sheet-hd-l { flex: 1; min-width: 0; }
+.detail-sheet-eyebrow {
+  font-size: 0.62rem; font-weight: 700;
+  color: var(--red); letter-spacing: 0.18em;
+  margin-bottom: 4px;
+}
+.detail-sheet-title {
+  font-size: 1.1rem; font-weight: 800;
+  color: var(--ink); letter-spacing: 0.02em;
+  line-height: 1.35;
+}
+.detail-sheet-time {
+  font-size: 0.74rem; font-weight: 700;
+  color: var(--red);
+  background: rgba(160,41,28,0.08);
+  border: 1px solid rgba(160,41,28,0.2);
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+.detail-sheet-close {
+  background: rgba(0,0,0,0.05);
+  border: none;
+  color: var(--ink-light);
+  font-size: 1rem;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.detail-sheet-close:active { background: rgba(0,0,0,0.1); }
+
+.detail-sheet-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 20px calc(28px + env(safe-area-inset-bottom, 0px));
+}
+
+/* My duty card inside detail sheet */
+.detail-myduty {
+  background: linear-gradient(135deg, #FFF8DC, #FFFCEB);
+  border: 1.5px solid rgba(201,162,39,0.45);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  position: relative;
+}
+.detail-myduty::before {
+  content: '★ 내 업무';
+  position: absolute;
+  top: -10px; left: 14px;
+  font-size: 0.6rem; font-weight: 800;
+  color: #fff;
+  background: var(--gold);
+  padding: 3px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.08em;
+}
+.detail-myduty-role {
+  font-size: 0.66rem; font-weight: 700;
+  color: #8B6A10; letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+.detail-myduty-text {
+  font-size: 1rem; font-weight: 700;
+  color: var(--ink); line-height: 1.5;
+}
+
+.detail-section {
+  margin-bottom: 18px;
+}
+.detail-section-hd {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--gray-muted);
+  letter-spacing: 0.2em;
+  margin-bottom: 9px;
+  display: flex; align-items: center; gap: 6px;
+}
+.detail-section-hd::before {
+  content: '';
+  width: 12px; height: 1.5px;
+  background: var(--gold);
+  border-radius: 999px;
+}
+.detail-guide {
+  font-size: 0.88rem;
+  color: var(--ink-light);
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+  white-space: pre-wrap;
+}
+.detail-guide.empty {
+  font-size: 0.82rem;
+  color: var(--gray-muted);
+  font-style: italic;
+  background: rgba(201,162,39,0.06);
+  border: 1px dashed rgba(201,162,39,0.28);
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+.detail-step-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.detail-step {
+  display: flex; gap: 10px;
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(224,207,160,0.6);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.detail-step-num {
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--red);
+  color: #fff;
+  font-size: 0.72rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+.detail-step-text {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--ink);
+  line-height: 1.55;
+}
+
+.detail-people-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 6px;
+}
+.detail-people-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(224,207,160,0.6);
+  border-radius: 8px;
+}
+.detail-people-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.detail-people-role {
+  font-size: 0.65rem;
+  color: var(--gray-muted);
+  margin-left: auto;
+  white-space: nowrap;
+}
+.current-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: linear-gradient(180deg, var(--gold-light), var(--gold), rgba(201,162,39,0.2));
+  border-radius: 20px 0 0 20px;
+}
+
+.next-card {
+  flex: 1;
+  background: linear-gradient(145deg, #07101E 0%, #0F1A32 100%);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.next-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: linear-gradient(180deg, var(--navy-light), rgba(42,61,106,0.5));
+  border-radius: 20px 0 0 20px;
+}
+
+.bc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.bc-label {
+  font-size: 0.63rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.36);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bc-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: pulseDot 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.65); }
+}
+
+.bc-time {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  background: rgba(201,162,39,0.1);
+  border: 1px solid rgba(201,162,39,0.22);
+  padding: 3px 11px;
+  border-radius: 999px;
+}
+
+/* ─── Countdown / progress (current card) ─── */
+.bc-countdown {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  flex-shrink: 0;
+}
+.bc-cd-bar {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.bc-cd-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-light), var(--gold));
+  border-radius: 999px;
+  transition: width 1s linear;
+}
+.bc-cd-text {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--gold-light);
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ─── "Time until" on next card ─── */
+.bc-until {
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: rgba(128,144,192,0.85);
+  letter-spacing: 0.08em;
+  margin-top: 8px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Done state on current card ─── */
+.bc-done-btn {
+  margin-top: 12px;
+  flex-shrink: 0;
+  padding: 10px 14px;
+  min-height: 40px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(245,237,214,0.18);
+  color: rgba(245,237,214,0.78);
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s;
+}
+.bc-done-btn .check-box {
+  width: 16px; height: 16px;
+  border: 1.5px solid rgba(245,237,214,0.5);
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+.bc-done-btn.checked {
+  background: rgba(46,125,50,0.18);
+  border-color: rgba(110,200,120,0.45);
+  color: #B5E8B5;
+}
+.bc-done-btn.checked .check-box {
+  background: #4CAF50;
+  border-color: #4CAF50;
+  color: #fff;
+}
+.bc-done-btn.hidden { display: none; }
+
+.bc-event {
+  font-size: clamp(0.76rem, 2.6vw, 0.9rem);
+  color: rgba(255,255,255,0.4);
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  flex-shrink: 0;
+  margin-bottom: 12px;
+}
+
+.bc-divider {
+  width: 24px;
+  height: 1.5px;
+  background: linear-gradient(90deg, rgba(201,162,39,0.55), transparent);
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.bc-task {
+  font-size: clamp(1.05rem, 4.8vw, 1.55rem);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  flex: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+.bc-task.muted {
+  color: rgba(255,255,255,0.26);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(0.85rem, 3.2vw, 1.05rem);
+}
+
+/* ─── Open timetable button ─── */
+.open-tt-btn {
+  margin: 12px 14px;
+  margin-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  height: 56px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, rgba(201,162,39,0.18), rgba(160,41,28,0.18));
+  border: 1px solid rgba(201,162,39,0.32);
+  color: var(--gold-light);
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(160,41,28,0.18);
+}
+.open-tt-btn:active {
+  background: linear-gradient(135deg, rgba(201,162,39,0.28), rgba(160,41,28,0.28));
+  transform: scale(0.99);
+}
+.open-tt-btn .arrow { font-size: 1rem; opacity: 0.7; transition: transform 0.2s; }
+.open-tt-btn:active .arrow { transform: translateX(3px); }
+
+/* ═══════════════════════════════════════════
+   TIMETABLE PANEL (full-screen slide-up)
+   ═══════════════════════════════════════════ */
+.tt-panel {
+  position: fixed;
+  inset: 0;
+  background: var(--tt-bg);
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+.tt-panel.open { transform: translateY(0); }
+
+.tt-topbar {
+  background: rgba(14, 8, 4, 0.82);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(201,162,39,0.18);
+  padding: 0 16px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+.tt-back {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--gold-light);
+  background: rgba(201,162,39,0.1);
+  border: 1px solid rgba(201,162,39,0.2);
+  border-radius: 999px;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  padding: 7px 16px;
+  min-height: 36px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.tt-back:active { background: rgba(201,162,39,0.2); }
+
+.tt-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(245,237,214,0.5);
+  letter-spacing: 0.12em;
+}
+
+.tt-filter {
+  background: var(--hanji-dark);
+  border-bottom: 1px solid var(--hanji-darker);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+/* ─── View toggle (iOS-style switch) ─── */
+.view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  flex-shrink: 0;
+}
+.view-toggle input[type="checkbox"] { display: none; }
+
+.toggle-track {
+  width: 40px; height: 22px;
+  background: rgba(160,41,28,0.15);
+  border: 1.5px solid rgba(160,41,28,0.25);
+  border-radius: 999px;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.25s, border-color 0.25s;
+}
+.view-toggle input:checked + .toggle-track {
+  background: var(--red);
+  border-color: var(--red);
+}
+.toggle-thumb {
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.28);
+  transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+.view-toggle input:checked + .toggle-track .toggle-thumb { transform: translateX(18px); }
+
+.toggle-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--ink-light);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+
+.tt-day-tabs {
+  display: flex;
+  padding: 12px 16px 0;
+  background: var(--tt-bg);
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.tt-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: 0 14px;
+  padding-bottom: max(60px, env(safe-area-inset-bottom, 60px));
+  background: var(--tt-bg);
+}
+
+.tt-footer {
+  text-align: center;
+  padding: 24px 16px;
+  border-top: 1px solid var(--hanji-darker);
+  margin-top: 16px;
+}
+.tt-footer p {
+  color: var(--gray-muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+}
+
+
+/* ═══════════════════════════════════════════
+   DAY TABS
+   ═══════════════════════════════════════════ */
+.day-tab {
+  flex: 1;
+  padding: 10px 12px;
+  min-height: 48px;
+  background: rgba(224,207,160,0.35);
+  border: 1.5px solid transparent;
+  border-bottom: none;
+  color: var(--gray-muted);
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  letter-spacing: 0.02em;
+  transition: all 0.2s;
+  border-radius: 12px 12px 0 0;
+  line-height: 1.3;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.day-tab .tab-main { font-size: 0.93rem; font-weight: 700; display: block; }
+.day-tab .tab-sub  { font-size: 0.65rem; font-weight: 400; opacity: 0.65; display: block; margin-top: 1px; letter-spacing: 0.08em; }
+.day-tab.active {
+  background: var(--tt-bg);
+  border-color: rgba(201,162,39,0.4);
+  border-bottom-color: var(--tt-bg);
+  color: var(--ink);
+  box-shadow: 0 -2px 0 var(--red);
+  z-index: 2;
+}
+
+/* ═══════════════════════════════════════════
+   TIMELINE
+   ═══════════════════════════════════════════ */
+.day-panel { display: none; }
+.day-panel.active { display: block; }
+
+.timeline {
+  position: relative;
+  padding-top: 20px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 48px;
+  top: 0; bottom: 0;
+  width: 1.5px;
+  background: linear-gradient(180deg, transparent 0%, rgba(160,41,28,0.18) 5%, rgba(160,41,28,0.18) 95%, transparent 100%);
+}
+
+.event-block {
+  display: flex;
+  gap: 0;
+  margin-bottom: 20px;
+  position: relative;
+  align-items: flex-start;
+}
+
+.event-time {
+  width: 48px;
+  flex-shrink: 0;
+  text-align: right;
+  position: relative;
+  top: 4px;
+}
+.time-stamp {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--red);
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  padding-right: 2px;
+}
+
+.event-dot {
+  width: 22px;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 2px;
+  position: relative;
+  z-index: 2;
+}
+.seal-dot {
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  background: var(--red);
+  border: 2px solid var(--tt-bg);
+  box-shadow: 0 0 0 2px rgba(160,41,28,0.25);
+  margin-top: 6px;
+}
+
+.event-content {
+  flex: 1;
+  min-width: 0;
+  background: rgba(255,255,255,0.82);
+  border: 1px solid rgba(224,207,160,0.7);
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.event-content::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: linear-gradient(180deg, var(--red), rgba(160,41,28,0.25));
+  border-radius: 14px 0 0 14px;
+}
+
+.event-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 10px;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.event-name::before { content: '◈'; color: var(--gold); font-size: 0.72rem; flex-shrink: 0; }
+
+/* ─── Duty Grid ─── */
+.duty-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 6px;
+}
+.duty-card {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 9px 11px;
+  background: rgba(245,237,214,0.7);
+  border: 1px solid rgba(224,207,160,0.6);
+  border-radius: 10px;
+  transition: all 0.22s;
+  min-height: 50px;
+  position: relative;
+}
+.duty-card.highlighted {
+  background: #fffef5;
+  border-color: rgba(201,162,39,0.5);
+  box-shadow: 0 0 0 2px rgba(201,162,39,0.18), 0 4px 14px rgba(201,162,39,0.15);
+}
+.duty-card.faded { opacity: 0.2; }
+.duty-top { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.role-badge {
+  display: inline-block;
+  font-size: 0.61rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.role-president        { background: rgba(201,162,39,0.14); color: #8B6A10; border: 1px solid rgba(201,162,39,0.3); }
+.role-director         { background: rgba(160,41,28,0.1);  color: #8B1F14; border: 1px solid rgba(160,41,28,0.25); }
+.role-dept-planning    { background: rgba(91,45,138,0.1);  color: #5B2D8A; border: 1px solid rgba(91,45,138,0.28); }
+.role-dept-edu         { background: rgba(26,79,160,0.1);  color: #1A4FA0; border: 1px solid rgba(26,79,160,0.28); }
+.role-dept-broadcast   { background: rgba(160,90,16,0.1);  color: #A05A10; border: 1px solid rgba(160,90,16,0.28); }
+.role-dept-exec        { background: rgba(11,110,90,0.1);  color: #0B6E5A; border: 1px solid rgba(11,110,90,0.28); }
+.role-dept-pr          { background: rgba(139,30,90,0.1);  color: #8B1E5A; border: 1px solid rgba(139,30,90,0.28); }
+.role-rep              { background: rgba(46,125,50,0.1);  color: #1B5E20; border: 1px solid rgba(46,125,50,0.25); }
+.role-helper           { background: rgba(100,100,100,0.1);color: #505050; border: 1px solid rgba(100,100,100,0.2); }
+.duty-name { font-size: 0.86rem; font-weight: 700; color: var(--ink); }
+.duty-desc { font-size: 0.73rem; color: #5A4B30; line-height: 1.45; }
+
+/* Night event */
+.event-block.night-event .event-content { background: rgba(18,15,28,0.95); border-color: rgba(139,111,212,0.2); backdrop-filter: none; }
+.event-block.night-event .event-content::before { background: linear-gradient(180deg, #8B6FD4, rgba(139,111,212,0.2)); }
+.event-block.night-event .event-name { color: #E8DEFF; }
+.event-block.night-event .event-name::before { content: '✦'; color: #8B6FD4; }
+.event-block.night-event .seal-dot { background: #8B6FD4; border-color: var(--tt-bg); box-shadow: 0 0 0 2px rgba(139,111,212,0.28); }
+.event-block.night-event .time-stamp { color: #9B7FE4; }
+.event-block.night-event .duty-card { background: rgba(26,23,48,0.9); border-color: rgba(139,111,212,0.2); }
+.event-block.night-event .duty-name { color: #E8DEFF; }
+.event-block.night-event .duty-desc { color: #A090CC; }
+.event-block.night-event .duty-card.highlighted { background: rgba(34,32,58,0.95); border-color: rgba(139,111,212,0.45); box-shadow: 0 0 0 2px rgba(139,111,212,0.18); }
+
+/* Past block fading */
+.event-block.past .event-content { opacity: 0.5; }
+.event-block.past .seal-dot { background: rgba(160,41,28,0.35); box-shadow: 0 0 0 2px rgba(160,41,28,0.12); }
+.event-block.past .time-stamp { color: rgba(160,41,28,0.5); }
+
+/* Current block highlight */
+.event-block.current .event-content {
+  border-color: rgba(201,162,39,0.55);
+  box-shadow: 0 0 0 2px rgba(201,162,39,0.2), 0 6px 22px rgba(201,162,39,0.18);
+  background: #fffef5;
+}
+.event-block.current .event-content::before { background: linear-gradient(180deg, var(--gold-light), var(--gold)); }
+.event-block.current .seal-dot { background: var(--gold); box-shadow: 0 0 0 2px rgba(201,162,39,0.45), 0 0 12px rgba(201,162,39,0.55); }
+.event-block.current .time-stamp { color: #8B6A10; }
+
+/* My-duty highlight when 'all' mode is on */
+.duty-card.is-mine {
+  background: linear-gradient(135deg, #FFFCEB, #FFF8DC);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1.5px rgba(201,162,39,0.4), 0 4px 14px rgba(201,162,39,0.18);
+  position: relative;
+}
+.duty-card.is-mine::after {
+  content: '★ 내 임무';
+  position: absolute;
+  top: 6px; right: 8px;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+}
+
+/* Todo checkbox */
+.todo-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.todo-check {
+  width: 16px; height: 16px;
+  border: 1.5px solid rgba(139,111,212,0.5);
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: transparent;
+  transition: all 0.15s;
+}
+.todo-item.done .todo-check {
+  background: #8B6FD4;
+  border-color: #8B6FD4;
+  color: #fff;
+}
+.todo-item.done .todo-text {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+.todo-text { flex: 1; }
+
+/* Notice unread dot on bell */
+.notice-bell-btn {
+  position: relative;
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.96rem;
+  color: rgba(245,237,214,0.65);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(245,237,214,0.12);
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.notice-bell-btn:active { background: rgba(201,162,39,0.18); }
+.notice-bell-btn.has-unread::after {
+  content: '';
+  position: absolute;
+  top: 4px; right: 4px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--red-light);
+  box-shadow: 0 0 0 2px rgba(14,8,4,0.95), 0 0 6px var(--red-light);
+}
+
+/* Top bar overflow menu */
+.top-bar-menu-wrap { position: relative; flex-shrink: 0; }
+.top-bar-menu-btn {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(245,237,214,0.12);
+  color: rgba(245,237,214,0.65);
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.top-bar-menu-btn:active { background: rgba(201,162,39,0.18); }
+.top-bar-menu {
+  position: absolute;
+  top: 44px; right: 0;
+  background: rgba(20,14,8,0.98);
+  border: 1px solid rgba(201,162,39,0.25);
+  border-radius: 12px;
+  padding: 6px;
+  min-width: 160px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+  z-index: 200;
+  display: none;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+.top-bar-menu.open { display: block; }
+.top-bar-menu button {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: rgba(245,237,214,0.85);
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.top-bar-menu button:active { background: rgba(201,162,39,0.16); }
+.top-bar-menu button.danger { color: #E89080; }
+.top-bar-menu hr { border: none; border-top: 1px solid rgba(245,237,214,0.08); margin: 4px 6px; }
+
+/* Notice modal sheet */
+.notice-sheet {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  z-index: 250;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+.notice-sheet.open { display: flex; }
+.notice-sheet-inner {
+  width: 100%;
+  max-width: 540px;
+  background: linear-gradient(180deg, #2A1808, #1A0E04);
+  border-top: 1px solid rgba(201,162,39,0.4);
+  border-radius: 22px 22px 0 0;
+  padding: 18px 18px calc(24px + env(safe-area-inset-bottom, 0px));
+  max-height: 75vh;
+  overflow-y: auto;
+  animation: sheetUp 0.32s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+@keyframes sheetUp { from { transform: translateY(100%);} to { transform: translateY(0);} }
+.notice-sheet-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px; padding-bottom: 10px;
+  border-bottom: 1px solid rgba(201,162,39,0.2);
+}
+.notice-sheet-title { font-size: 0.82rem; font-weight: 700; color: var(--gold); letter-spacing: 0.18em; }
+.notice-sheet-close { background: none; border: none; color: rgba(245,237,214,0.6); font-size: 1.2rem; cursor: pointer; padding: 4px 10px; }
+.notice-sheet-empty { padding: 30px 0; text-align: center; color: rgba(245,237,214,0.4); font-size: 0.85rem; letter-spacing: 0.06em; }
+
+/* Dashboard cleanup: hide old inline notice card */
+.notice-section { display: none !important; }
+
+/* Now indicator */
+.now-line { flex: 1; height: 2px; background: var(--red-light); box-shadow: 0 0 6px var(--red-light); animation: nowPulse 2s ease-in-out infinite; }
+.now-label { background: var(--red-light); color: #fff; font-size: 0.65rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; letter-spacing: 0.04em; animation: nowPulse 2s ease-in-out infinite; white-space: nowrap; }
+@keyframes nowPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+
+.no-duties { font-size: 0.78rem; color: var(--gray-muted); font-style: italic; letter-spacing: 0.04em; padding: 2px 0; }
+.section-ornament { text-align: center; padding: 14px 0 8px; color: var(--gold); opacity: 0.35; font-size: 0.9rem; letter-spacing: 0.5em; }
+
+/* ═══════════════════════════════════════════
+   LOGIN OVERLAY
+   ═══════════════════════════════════════════ */
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 35% 55%, #1C0A04 0%, #09070E 65%);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.45s, visibility 0.45s;
+}
+.login-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+.login-box {
+  background: rgba(245,237,214,0.97);
+  border: 1.5px solid rgba(201,162,39,0.35);
+  box-shadow: 0 0 0 1px rgba(201,162,39,0.08), 0 0 80px rgba(160,41,28,0.12), 0 28px 80px rgba(0,0,0,0.7);
+  max-width: 400px;
+  width: calc(100% - 32px);
+  border-radius: 24px;
+  overflow: hidden;
+}
+.login-dancheong {
+  height: 5px;
+  background: repeating-linear-gradient(90deg,
+    var(--red) 0, var(--red) 26px,
+    var(--gold) 26px, var(--gold) 42px,
+    #2E7D32 42px, #2E7D32 68px,
+    var(--gold) 68px, var(--gold) 84px,
+    var(--navy-light) 84px, var(--navy-light) 110px,
+    var(--gold) 110px, var(--gold) 126px);
+  opacity: 0.75;
+}
+.login-body { padding: 28px 32px 32px; text-align: center; }
+.login-title { font-size: 1.55rem; font-weight: 900; color: var(--ink); letter-spacing: 0.2em; margin: 12px 0 5px; }
+.login-subtitle { font-size: 0.76rem; color: var(--gray-muted); letter-spacing: 0.06em; margin-bottom: 24px; line-height: 1.75; }
+.login-select {
+  width: 100%; padding: 13px 16px; font-family: 'Noto Serif KR', serif;
+  font-size: 16px; border: 1.5px solid rgba(224,207,160,0.9); border-radius: 12px;
+  background: rgba(255,255,255,0.75); color: var(--ink); appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A7A5A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+  margin-bottom: 12px; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s;
+}
+.login-select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,162,39,0.15); }
+.login-input {
+  width: 100%; padding: 13px 16px; font-family: 'Noto Serif KR', serif;
+  font-size: 16px; border: 1.5px solid rgba(224,207,160,0.9); border-radius: 12px;
+  background: rgba(255,255,255,0.75); color: var(--ink);
+  margin-bottom: 12px; transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+}
+.login-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,162,39,0.15); }
+.login-input::placeholder { color: rgba(90,75,48,0.45); }
+.login-btn {
+  width: 100%; padding: 15px 24px; min-height: 50px;
+  background: var(--red); color: var(--hanji);
+  font-family: 'Noto Serif KR', serif; font-size: 1rem; font-weight: 700;
+  letter-spacing: 0.2em; border: none; border-radius: 12px; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(160,41,28,0.38);
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s;
+}
+.login-btn:active { background: var(--red-light); transform: scale(0.99); box-shadow: 0 2px 10px rgba(160,41,28,0.25); }
+.login-err { font-size: 0.77rem; color: var(--red); margin-top: 10px; min-height: 18px; letter-spacing: 0.04em; }
+.login-ok  { font-size: 0.77rem; color: #2E7D32; margin-top: 10px; min-height: 18px; letter-spacing: 0.04em; }
+.login-btn-ghost {
+  width: 100%; padding: 13px 24px; min-height: 46px;
+  background: transparent; color: var(--gray-muted);
+  font-family: 'Noto Serif KR', serif; font-size: 0.9rem; font-weight: 600;
+  letter-spacing: 0.1em; border: 1.5px solid var(--hanji-darker); border-radius: 12px;
+  cursor: pointer; margin-top: 8px;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s;
+}
+.login-btn-ghost:active { background: var(--hanji-darker); }
+
+/* top-bar pw change button */
+.top-bar-pw {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.7rem; font-weight: 600;
+  color: rgba(245,237,214,0.38);
+  background: transparent; border: none;
+  padding: 6px 2px; cursor: pointer;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+.top-bar-pw:active { color: var(--gold); }
+
+/* password change modal */
+.pw-modal {
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse at 35% 55%, #1C0A04 0%, #09070E 65%);
+  z-index: 3000;
+  display: none;
+  align-items: center; justify-content: center;
+}
+.pw-modal.open { display: flex; }
+
+/* ═══════════════════════════════════════════
+   ADMIN PANEL
+   ═══════════════════════════════════════════ */
+.top-bar-admin {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.68rem; font-weight: 700;
+  color: var(--gold);
+  background: rgba(201,162,39,0.12);
+  border: 1px solid rgba(201,162,39,0.32);
+  padding: 6px 11px; min-height: 32px;
+  border-radius: 999px; cursor: pointer;
+  letter-spacing: 0.07em; white-space: nowrap;
+  flex-shrink: 0; -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s;
+}
+.top-bar-admin:active { background: rgba(201,162,39,0.26); }
+.top-bar-admin.hidden { display: none; }
+
+.admin-panel {
+  position: fixed; inset: 0;
+  background: #0C0A16;
+  z-index: 400;
+  display: flex; flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+.admin-panel.open { transform: translateY(0); }
+
+.admin-ph {
+  flex-shrink: 0; height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px;
+  background: rgba(14,8,4,0.92);
+  border-bottom: 1px solid rgba(201,162,39,0.2);
+}
+.admin-ph-title { font-size: 0.88rem; font-weight: 700; color: var(--gold); letter-spacing: 0.14em; }
+.admin-close-btn { background: none; border: none; color: rgba(245,237,214,0.45); font-size: 1.2rem; cursor: pointer; padding: 8px; -webkit-tap-highlight-color: transparent; }
+
+.admin-tab-bar { flex-shrink: 0; display: flex; border-bottom: 1px solid rgba(201,162,39,0.12); }
+.admin-tab-btn {
+  flex: 1; padding: 13px;
+  font-family: 'Noto Serif KR', serif; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em;
+  color: rgba(245,237,214,0.4); background: none; border: none; cursor: pointer;
+  border-bottom: 2px solid transparent; transition: all 0.2s;
+}
+.admin-tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+.admin-body { flex: 1; overflow-y: auto; padding: 16px; -webkit-overflow-scrolling: touch; }
+
+.admin-day-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+.admin-day-tab {
+  flex: 1; padding: 8px;
+  font-family: 'Noto Serif KR', serif; font-size: 0.75rem; font-weight: 600;
+  border-radius: 8px; border: 1px solid rgba(201,162,39,0.18);
+  background: rgba(255,255,255,0.03); color: rgba(245,237,214,0.45); cursor: pointer;
+}
+.admin-day-tab.active { background: rgba(201,162,39,0.15); color: var(--gold); border-color: rgba(201,162,39,0.4); }
+
+.admin-block { background: rgba(255,255,255,0.03); border: 1px solid rgba(201,162,39,0.12); border-radius: 12px; margin-bottom: 9px; overflow: hidden; }
+.admin-block-hd { display: flex; align-items: center; gap: 6px; padding: 9px 11px; background: rgba(201,162,39,0.05); flex-wrap: wrap; }
+
+.admin-inp {
+  font-family: 'Noto Serif KR', serif; font-size: 0.74rem;
+  background: rgba(0,0,0,0.35); border: 1px solid rgba(201,162,39,0.2);
+  border-radius: 6px; color: var(--hanji); padding: 5px 7px; outline: none;
+}
+.admin-inp:focus { border-color: rgba(201,162,39,0.55); }
+.admin-inp-time { width: 60px; flex-shrink: 0; }
+.admin-inp-event { flex: 1; min-width: 120px; }
+.admin-night-label { font-size: 0.64rem; color: rgba(139,111,212,0.75); white-space: nowrap; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; gap: 3px; }
+
+.admin-btn-icon { background: none; border: none; font-size: 0.85rem; cursor: pointer; padding: 4px 7px; border-radius: 6px; -webkit-tap-highlight-color: transparent; flex-shrink: 0; color: rgba(245,237,214,0.45); }
+.admin-btn-del { color: rgba(220,70,50,0.65); }
+.admin-btn-icon:active { background: rgba(255,255,255,0.08); }
+
+.admin-duties { padding: 8px 11px 11px; }
+.admin-duty-row { display: flex; align-items: center; gap: 5px; margin-bottom: 6px; }
+.admin-inp-role { width: 68px; flex-shrink: 0; }
+.admin-inp-name { width: 68px; flex-shrink: 0; font-family: 'Noto Serif KR', serif; font-size: 0.72rem; background: rgba(0,0,0,0.35); border: 1px solid rgba(201,162,39,0.2); border-radius: 6px; color: var(--hanji); padding: 5px 4px; outline: none; }
+.admin-inp-duty { flex: 1; min-width: 0; }
+
+.admin-add-duty-btn, .admin-add-block-btn {
+  width: 100%; padding: 9px;
+  font-family: 'Noto Serif KR', serif; font-size: 0.74rem; font-weight: 600; letter-spacing: 0.05em;
+  border-radius: 8px; border: 1px dashed rgba(201,162,39,0.28);
+  background: rgba(201,162,39,0.04); color: rgba(201,162,39,0.65); cursor: pointer; margin-top: 4px;
+}
+.admin-add-block-btn { margin-top: 12px; padding: 12px; font-size: 0.78rem; }
+
+.admin-person-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.admin-person-btn {
+  font-family: 'Noto Serif KR', serif; font-size: 0.71rem;
+  padding: 5px 12px; border-radius: 999px;
+  border: 1px solid rgba(201,162,39,0.18); background: rgba(255,255,255,0.04);
+  color: rgba(245,237,214,0.55); cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.admin-person-btn.active { background: rgba(201,162,39,0.17); color: var(--gold); border-color: rgba(201,162,39,0.48); }
+
+.admin-todo-person { font-size: 0.85rem; font-weight: 700; color: var(--hanji); letter-spacing: 0.1em; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(201,162,39,0.14); }
+.admin-todo-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.admin-todo-text { flex: 1; font-size: 0.8rem; color: rgba(245,237,214,0.8); line-height: 1.4; }
+.admin-todo-add { display: flex; gap: 8px; margin-top: 12px; }
+.admin-inp-todo { flex: 1; }
+.admin-add-todo-btn {
+  font-family: 'Noto Serif KR', serif; font-size: 0.74rem;
+  padding: 6px 14px; border-radius: 8px;
+  border: 1px solid rgba(201,162,39,0.32); background: rgba(201,162,39,0.11);
+  color: var(--gold); cursor: pointer; white-space: nowrap;
+}
+.admin-hint { font-size: 0.8rem; color: rgba(245,237,214,0.28); text-align: center; margin-top: 36px; letter-spacing: 0.08em; }
+
+/* Todo section on dashboard */
+.todo-section {
+  flex-shrink: 0; margin: 0 14px 8px;
+  background: rgba(20,18,38,0.88);
+  border: 1px solid rgba(139,111,212,0.2); border-radius: 14px;
+  padding: 12px 16px; max-height: 130px; overflow-y: auto;
+}
+.todo-section.hidden { display: none; }
+.todo-hd { font-size: 0.62rem; font-weight: 700; color: rgba(139,111,212,0.65); letter-spacing: 0.14em; margin-bottom: 7px; }
+.todo-item { font-size: 0.79rem; color: rgba(245,237,214,0.8); padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); line-height: 1.45; }
+.todo-item:last-child { border-bottom: none; }
+
+/* Notice section on dashboard */
+.notice-section {
+  flex-shrink: 0; margin: 0 14px 0;
+  background: linear-gradient(135deg, rgba(40,24,4,0.97) 0%, rgba(26,16,4,0.97) 100%);
+  border: 1px solid rgba(201,162,39,0.55);
+  border-radius: 14px; overflow: hidden;
+  box-shadow: 0 0 18px rgba(201,162,39,0.18), inset 0 1px 0 rgba(201,162,39,0.12);
+}
+.notice-section.hidden { display: none; }
+.notice-hd {
+  display: flex; align-items: center; gap: 7px;
+  padding: 10px 14px;
+  background: rgba(201,162,39,0.18);
+  border-bottom: 1px solid rgba(201,162,39,0.3);
+}
+.notice-hd-label { font-size: 0.68rem; font-weight: 700; color: var(--gold); letter-spacing: 0.18em; text-shadow: 0 0 8px rgba(201,162,39,0.5); }
+.notice-body { max-height: 120px; overflow-y: auto; padding: 10px 14px; }
+.notice-item { font-size: 0.82rem; color: rgba(245,237,214,0.92); padding: 7px 0; border-bottom: 1px solid rgba(201,162,39,0.1); line-height: 1.6; }
+.notice-item:last-child { border-bottom: none; }
+.notice-meta { font-size: 0.6rem; color: rgba(201,162,39,0.55); margin-left: 7px; }
+
+/* Admin: read-only role badge */
+.admin-role-badge {
+  display: inline-block; width: 68px; flex-shrink: 0;
+  font-size: 0.68rem; color: rgba(201,162,39,0.65);
+  background: rgba(201,162,39,0.07); border: 1px solid rgba(201,162,39,0.15);
+  border-radius: 6px; padding: 5px 7px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* Admin notice editor */
+.admin-notice-row { display: flex; align-items: flex-start; gap: 8px; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.admin-notice-content { flex: 1; }
+.admin-notice-text { font-size: 0.8rem; color: rgba(245,237,214,0.8); line-height: 1.45; word-break: break-all; }
+.admin-notice-time { font-size: 0.62rem; color: rgba(201,162,39,0.5); margin-top: 3px; }
+.admin-notice-add { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.admin-inp-notice { width: 100%; min-height: 72px; resize: vertical; }
+.admin-sim-row {
+  display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+  background: rgba(139,111,212,0.07); border: 1px solid rgba(139,111,212,0.2);
+  border-radius: 10px; padding: 9px 12px; margin-bottom: 14px;
+}
+.admin-sim-label { font-size: 0.66rem; font-weight: 700; color: rgba(139,111,212,0.75); letter-spacing: 0.1em; flex-shrink: 0; }
+.admin-inp-sim { flex: 1; min-width: 160px; font-size: 0.72rem; color-scheme: dark; }
+.admin-inp-sim:disabled { opacity: 0.3; cursor: not-allowed; }
+.admin-sim-btn {
+  font-family: 'Noto Serif KR', serif; font-size: 0.7rem; font-weight: 600;
+  padding: 5px 12px; border-radius: 7px; cursor: pointer; white-space: nowrap;
+  border: 1px solid rgba(139,111,212,0.35); background: rgba(139,111,212,0.12); color: #B89FE8;
+}
+.admin-sim-reset { border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(245,237,214,0.4); }
+.admin-sim-active { color: #C49FE8; }
+
+.offline-badge {
+  font-size: 0.6rem; font-weight: 700; color: #FF6B6B;
+  background: rgba(255,60,60,0.12); border: 1px solid rgba(255,60,60,0.3);
+  padding: 3px 8px; border-radius: 999px; white-space: nowrap; flex-shrink: 0;
+}
+.offline-badge.hidden { display: none; }
+
+.admin-add-notice-btn {
+  font-family: 'Noto Serif KR', serif; font-size: 0.76rem; font-weight: 700;
+  padding: 10px; border-radius: 8px; letter-spacing: 0.06em;
+  border: 1px solid rgba(201,162,39,0.38); background: rgba(201,162,39,0.13);
+  color: var(--gold); cursor: pointer;
+}
+
+/* ═══ ADMIN v2 — refined UX ═══ */
+
+/* Save toast */
+.admin-save-toast {
+  position: fixed; left: 50%; bottom: 28px;
+  transform: translate(-50%, 20px);
+  background: rgba(40,80,40,0.95); color: #B7E5B7;
+  border: 1px solid rgba(120,200,120,0.4);
+  font-size: 0.74rem; font-weight: 600; letter-spacing: 0.08em;
+  padding: 9px 18px; border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s, transform 0.25s;
+  z-index: 600;
+}
+.admin-save-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* Tab bar — 4 tabs now */
+.admin-tab-btn { padding: 12px 6px; font-size: 0.72rem; letter-spacing: 0.04em; }
+.admin-tab-btn .tab-ico { display: block; font-size: 0.95rem; margin-bottom: 2px; opacity: 0.7; }
+.admin-tab-btn.active .tab-ico { opacity: 1; }
+
+/* Sticky toolbar inside admin-body */
+.admin-stick {
+  position: sticky; top: -16px; z-index: 5;
+  margin: -16px -16px 14px;
+  padding: 14px 16px 12px;
+  background: linear-gradient(#0C0A16 70%, rgba(12,10,22,0.92));
+  border-bottom: 1px solid rgba(201,162,39,0.12);
+}
+.admin-stats {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  font-size: 0.7rem; color: rgba(245,237,214,0.55);
+  letter-spacing: 0.06em; margin-bottom: 10px;
+}
+.admin-stats b { color: var(--gold); font-weight: 700; }
+.admin-stats .stat-warn { color: #E89A6F; }
+.admin-stats .stat-warn b { color: #FF8A55; }
+
+/* Block redesign */
+.admin-block { margin-bottom: 10px; transition: border-color 0.2s, background 0.2s; }
+.admin-block.no-duties { border-color: rgba(232,154,111,0.32); background: rgba(232,154,111,0.04); }
+.admin-block.no-duties .admin-block-hd { background: rgba(232,154,111,0.07); }
+.admin-block.now { border-color: rgba(123,197,123,0.55); box-shadow: 0 0 0 1px rgba(123,197,123,0.35), 0 4px 14px rgba(123,197,123,0.12); }
+.admin-block.now .admin-block-hd { background: rgba(123,197,123,0.08); }
+.admin-block-hd {
+  display: grid;
+  grid-template-columns: 78px 1fr auto;
+  gap: 7px; align-items: center;
+  padding: 10px 11px;
+}
+.admin-block-meta {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; gap: 6px;
+  padding-top: 4px; flex-wrap: wrap;
+}
+.admin-block-actions { display: flex; gap: 2px; align-items: center; }
+.admin-block-reorder { display: flex; flex-direction: column; gap: 2px; margin-right: 2px; }
+.admin-block-reorder button {
+  width: 22px; height: 17px; padding: 0; line-height: 1;
+  font-size: 0.62rem;
+  border: 1px solid rgba(201,162,39,0.18);
+  background: rgba(255,255,255,0.03);
+  color: rgba(245,237,214,0.55); cursor: pointer; border-radius: 4px;
+  -webkit-tap-highlight-color: transparent;
+  display: flex; align-items: center; justify-content: center;
+}
+.admin-block-reorder button:disabled { opacity: 0.25; cursor: not-allowed; }
+.admin-block-reorder button:active:not(:disabled) { background: rgba(201,162,39,0.14); }
+
+.admin-now-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em;
+  background: rgba(123,197,123,0.18); color: #9FE39F;
+  border: 1px solid rgba(123,197,123,0.4);
+  padding: 2px 8px; border-radius: 999px; flex-shrink: 0;
+}
+.admin-now-pill::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: #7BC57B; box-shadow: 0 0 6px #7BC57B;
+  animation: nowPulse 1.6s ease-in-out infinite;
+}
+@keyframes nowPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+.admin-empty-cta {
+  width: 100%; margin-top: 6px;
+  font-family: 'Noto Serif KR', serif; font-size: 0.74rem; font-weight: 600;
+  padding: 9px 11px; border-radius: 9px; cursor: pointer;
+  border: 1px dashed rgba(232,154,111,0.4);
+  background: rgba(232,154,111,0.06);
+  color: rgba(232,154,111,0.9);
+  letter-spacing: 0.05em;
+  -webkit-tap-highlight-color: transparent;
+}
+.admin-empty-cta:active { background: rgba(232,154,111,0.14); }
+.admin-duty-count {
+  font-size: 0.65rem; color: rgba(201,162,39,0.55);
+  background: rgba(201,162,39,0.06); border: 1px solid rgba(201,162,39,0.14);
+  padding: 2px 8px; border-radius: 999px; flex-shrink: 0;
+  letter-spacing: 0.04em;
+}
+.admin-duty-count.warn { color: #E89A6F; background: rgba(232,154,111,0.08); border-color: rgba(232,154,111,0.25); }
+.admin-night-label input[type=checkbox] { accent-color: #8B6FD4; }
+.admin-block-expand-btn {
+  font-size: 0.7rem; color: rgba(245,237,214,0.55);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(201,162,39,0.15);
+  padding: 4px 10px; border-radius: 7px; cursor: pointer;
+  white-space: nowrap;
+}
+.admin-block-expand-btn .ex-arrow { display:inline-block; transition: transform 0.2s; margin-right: 4px; opacity: 0.7; }
+.admin-block-expand-btn.open .ex-arrow { transform: rotate(180deg); }
+
+/* Duty rows — stack on narrow */
+.admin-duty-row {
+  display: grid;
+  grid-template-columns: 78px 88px 1fr auto;
+  gap: 5px; align-items: center;
+  padding: 5px 0;
+}
+.admin-inp-name-combo {
+  font-family: 'Noto Serif KR', serif; font-size: 0.72rem;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(201,162,39,0.2);
+  border-radius: 6px; color: var(--hanji);
+  padding: 5px 7px; outline: none; width: 100%; box-sizing: border-box;
+}
+.admin-inp-name-combo::placeholder { color: rgba(232,154,111,0.5); }
+.admin-inp-name-combo:focus { border-color: rgba(201,162,39,0.5); }
+.admin-inp-name-combo.empty {
+  border-color: rgba(232,154,111,0.4);
+  background: rgba(232,154,111,0.06);
+}
+.admin-inp-role-edit {
+  font-family: 'Noto Serif KR', serif; font-size: 0.7rem;
+  background: rgba(201,162,39,0.05);
+  border: 1px solid rgba(201,162,39,0.18);
+  border-radius: 6px; color: rgba(201,162,39,0.85);
+  padding: 5px 7px; outline: none; width: 100%;
+}
+.admin-inp-role-edit:focus { border-color: rgba(201,162,39,0.5); background: rgba(201,162,39,0.1); }
+
+.admin-duty-toolbar {
+  display: flex; gap: 7px; padding: 0 0 4px;
+  flex-wrap: wrap;
+}
+.admin-tool-btn {
+  font-family: 'Noto Serif KR', serif; font-size: 0.66rem; font-weight: 600;
+  padding: 5px 11px; border-radius: 7px;
+  border: 1px solid rgba(245,237,214,0.12);
+  background: rgba(255,255,255,0.03);
+  color: rgba(245,237,214,0.55);
+  cursor: pointer; white-space: nowrap;
+  letter-spacing: 0.04em;
+}
+.admin-tool-btn:active { background: rgba(255,255,255,0.08); }
+
+/* Person picker v2 */
+.admin-search-wrap {
+  position: relative; margin-bottom: 12px;
+}
+.admin-search-inp {
+  width: 100%; padding: 9px 14px 9px 34px;
+  font-family: 'Noto Serif KR', serif; font-size: 0.78rem;
+  background: rgba(0,0,0,0.4); border: 1px solid rgba(201,162,39,0.2);
+  border-radius: 10px; color: var(--hanji); outline: none;
+  box-sizing: border-box;
+}
+.admin-search-inp:focus { border-color: rgba(201,162,39,0.5); }
+.admin-search-ico {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: rgba(245,237,214,0.35); pointer-events: none; font-size: 0.85rem;
+}
+
+.admin-person-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px;
+  margin-bottom: 16px;
+}
+.admin-person-card {
+  position: relative;
+  font-family: 'Noto Serif KR', serif;
+  padding: 9px 8px 8px;
+  border-radius: 9px;
+  border: 1px solid rgba(201,162,39,0.15);
+  background: rgba(255,255,255,0.03);
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  text-align: center;
+  transition: all 0.15s;
+}
+.admin-person-card.active {
+  background: rgba(201,162,39,0.16);
+  border-color: rgba(201,162,39,0.55);
+  box-shadow: 0 0 0 1px rgba(201,162,39,0.4);
+}
+.admin-person-card .pc-name {
+  display: block; font-size: 0.78rem; font-weight: 600;
+  color: rgba(245,237,214,0.78);
+}
+.admin-person-card.active .pc-name { color: var(--gold); }
+.admin-person-card .pc-meta {
+  display: block; font-size: 0.6rem;
+  color: rgba(245,237,214,0.35); margin-top: 2px;
+  letter-spacing: 0.04em;
+}
+.admin-person-card .pc-badge {
+  position: absolute; top: -5px; right: -5px;
+  min-width: 18px; height: 18px; padding: 0 5px;
+  font-size: 0.62rem; font-weight: 700;
+  background: #8B6FD4; color: #fff;
+  border-radius: 999px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 2px #0C0A16;
+}
+
+/* Notice editor v2 */
+.admin-notice-row { padding: 11px 12px; border-radius: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.025); border: 1px solid rgba(201,162,39,0.1); align-items: center; }
+.admin-notice-row .admin-btn-icon { margin-left: 4px; }
+.admin-inp-notice-edit { width: 100%; box-sizing: border-box; min-height: 52px; }
+.admin-notice-counter {
+  font-size: 0.62rem; color: rgba(245,237,214,0.3);
+  text-align: right; margin-top: -2px;
+}
+
+/* Day chip + section title */
+.admin-section-hd {
+  display: flex; align-items: baseline; justify-content: space-between;
+  font-size: 0.68rem; font-weight: 700; color: rgba(201,162,39,0.6);
+  letter-spacing: 0.18em; margin: 4px 2px 8px;
+}
+.admin-section-hd .hd-action {
+  font-size: 0.66rem; color: rgba(245,237,214,0.4);
+  letter-spacing: 0.06em; cursor: pointer;
+  border: none; background: none; padding: 4px 6px;
+}
+
+/* Settings tab */
+.admin-set-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(201,162,39,0.12);
+  border-radius: 12px; padding: 14px 16px; margin-bottom: 12px;
+}
+.admin-set-card-hd {
+  font-size: 0.74rem; font-weight: 700; color: var(--hanji);
+  letter-spacing: 0.1em; margin-bottom: 4px;
+}
+.admin-set-card-sub {
+  font-size: 0.7rem; color: rgba(245,237,214,0.45);
+  line-height: 1.5; margin-bottom: 12px;
+}
+.admin-set-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.04);
+  flex-wrap: wrap;
+}
+.admin-set-row:first-of-type { border-top: none; }
+.admin-set-row label { font-size: 0.74rem; color: rgba(245,237,214,0.7); flex-shrink: 0; }
+.admin-set-row .admin-inp { flex: 1; min-width: 160px; }
+
+/* Todo view toggle (segmented) */
+.admin-view-seg {
+  display: flex; gap: 0;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(201,162,39,0.18);
+  border-radius: 9px; padding: 3px;
+  margin-bottom: 12px;
+}
+.admin-view-seg button {
+  flex: 1; padding: 7px;
+  font-family: 'Noto Serif KR', serif; font-size: 0.74rem; font-weight: 600;
+  letter-spacing: 0.05em;
+  background: none; border: none; border-radius: 6px;
+  color: rgba(245,237,214,0.45); cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s;
+}
+.admin-view-seg button.active {
+  background: rgba(201,162,39,0.18); color: var(--gold);
+  box-shadow: inset 0 0 0 1px rgba(201,162,39,0.35);
+}
+
+/* By-block todo view */
+.admin-tb-block {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(201,162,39,0.12);
+  border-radius: 12px; margin-bottom: 12px; overflow: hidden;
+}
+.admin-tb-block.has-missing { border-color: rgba(232,154,111,0.32); background: rgba(232,154,111,0.04); }
+.admin-tb-block-hd {
+  display: flex; align-items: baseline; gap: 10px;
+  padding: 10px 13px;
+  background: rgba(201,162,39,0.05);
+  border-bottom: 1px solid rgba(201,162,39,0.08);
+  flex-wrap: wrap;
+}
+.admin-tb-block.has-missing .admin-tb-block-hd { background: rgba(232,154,111,0.07); }
+.admin-tb-time {
+  font-size: 0.75rem; font-weight: 700; color: var(--gold);
+  letter-spacing: 0.04em; flex-shrink: 0;
+}
+.admin-tb-event {
+  flex: 1; min-width: 0;
+  font-size: 0.78rem; color: var(--hanji);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.admin-tb-summary {
+  font-size: 0.66rem; letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+.admin-tb-summary .ok { color: rgba(123,197,123,0.85); }
+.admin-tb-summary .miss { color: #E89A6F; font-weight: 700; }
+.admin-tb-people {
+  padding: 9px 11px 11px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+}
+.admin-tb-person {
+  position: relative;
+  font-family: 'Noto Serif KR', serif;
+  text-align: center; padding: 7px 6px 6px;
+  border-radius: 8px; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  border: 1px solid rgba(245,237,214,0.08);
+  background: rgba(255,255,255,0.02);
+  transition: all 0.15s;
+}
+.admin-tb-person.has-todos {
+  border-color: rgba(139,111,212,0.35);
+  background: rgba(139,111,212,0.08);
+}
+.admin-tb-person.no-todos {
+  border-color: rgba(232,154,111,0.28);
+  background: rgba(232,154,111,0.05);
+}
+.admin-tb-person:active { transform: scale(0.97); }
+.admin-tb-person .tp-name {
+  display: block; font-size: 0.74rem; font-weight: 600;
+  color: rgba(245,237,214,0.85);
+}
+.admin-tb-person .tp-role {
+  display: block; font-size: 0.58rem;
+  color: rgba(245,237,214,0.4);
+  margin-top: 1px; letter-spacing: 0.03em;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.admin-tb-person .tp-badge {
+  position: absolute; top: -4px; right: -4px;
+  min-width: 16px; height: 16px; padding: 0 4px;
+  font-size: 0.56rem; font-weight: 700;
+  background: #8B6FD4; color: #fff;
+  border-radius: 999px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 2px #0C0A16;
+}
+.admin-tb-person .tp-warn {
+  position: absolute; top: -4px; right: -4px;
+  width: 16px; height: 16px;
+  font-size: 0.66rem;
+  background: #C5704A; color: #fff;
+  border-radius: 999px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 2px #0C0A16;
+}
+.admin-tb-empty {
+  font-size: 0.74rem; color: rgba(245,237,214,0.32);
+  text-align: center; padding: 14px 0;
+  grid-column: 1/-1;
+}
+
+/* Inline duty editor in time-block view */
+.admin-tb-inline {
+  grid-column: 1/-1;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(201,162,39,0.35);
+  border-radius: 9px; padding: 11px 12px;
+  margin-top: 2px;
+  animation: tbEditOpen 0.18s ease-out;
+}
+@keyframes tbEditOpen {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.admin-tb-inline-hd {
+  display: flex; align-items: baseline; gap: 8px;
+  margin-bottom: 8px;
+}
+.admin-tb-inline-name {
+  font-family: 'Noto Serif KR', serif; font-size: 0.85rem; font-weight: 700;
+  color: var(--gold); letter-spacing: 0.04em;
+}
+.admin-tb-inline-role {
+  font-size: 0.62rem; color: rgba(245,237,214,0.45);
+  letter-spacing: 0.06em;
+}
+.admin-tb-inline-close {
+  margin-left: auto;
+  background: none; border: none; cursor: pointer;
+  font-size: 0.95rem; color: rgba(245,237,214,0.4); padding: 0 4px;
+  -webkit-tap-highlight-color: transparent;
+}
+.admin-tb-inline textarea {
+  width: 100%; box-sizing: border-box;
+  font-family: 'Noto Serif KR', serif; font-size: 0.78rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(201,162,39,0.25);
+  border-radius: 7px; color: var(--hanji);
+  padding: 8px 10px; outline: none; resize: vertical;
+  min-height: 56px; line-height: 1.5;
+}
+.admin-tb-inline textarea:focus { border-color: rgba(201,162,39,0.55); background: rgba(255,255,255,0.07); }
+.admin-tb-inline-actions {
+  display: flex; gap: 6px; margin-top: 8px;
+  justify-content: flex-end;
+}
+.admin-tb-inline-actions button {
+  font-family: 'Noto Serif KR', serif; font-size: 0.72rem; font-weight: 600;
+  padding: 6px 14px; border-radius: 7px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  letter-spacing: 0.04em;
+}
+.admin-tb-inline-actions .save {
+  background: rgba(201,162,39,0.85); color: #1a1404; border: none;
+}
+.admin-tb-inline-actions .save:active { background: rgba(201,162,39,1); }
+.admin-tb-inline-actions .jump {
+  background: rgba(255,255,255,0.04); color: rgba(245,237,214,0.55);
+  border: 1px solid rgba(245,237,214,0.12);
+}
+.admin-tb-inline-hint {
+  font-size: 0.62rem; color: rgba(245,237,214,0.35);
+  margin-top: 6px; line-height: 1.5;
+}
+.admin-tb-block.now { border-color: rgba(123,197,123,0.5); box-shadow: 0 0 0 1px rgba(123,197,123,0.3); }
+.admin-tb-block.now .admin-tb-block-hd { background: rgba(123,197,123,0.08); }
+
+/* Filter chips for by-block view */
+.admin-filter-row {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;
+}
+.admin-filter-chip {
+  font-family: 'Noto Serif KR', serif; font-size: 0.7rem; font-weight: 600;
+  padding: 5px 11px; border-radius: 999px; cursor: pointer;
+  border: 1px solid rgba(245,237,214,0.12);
+  background: rgba(255,255,255,0.03);
+  color: rgba(245,237,214,0.5);
+  -webkit-tap-highlight-color: transparent;
+  letter-spacing: 0.04em;
+}
+.admin-filter-chip.active {
+  border-color: rgba(201,162,39,0.5);
+  background: rgba(201,162,39,0.15); color: var(--gold);
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ TOP BAR ═══ -->
+<div class="top-bar hidden" id="topBar">
+  <div class="top-bar-logo">2026 MT <span>조선</span></div>
+  <div class="top-bar-user" id="topBarUser">
+    <span class="tbu-dept" id="tbuDept"></span>
+    <div class="tbu-row">
+      <span class="tbu-name" id="tbuName"></span>
+      <span class="tbu-badge" id="tbuBadge"></span>
+    </div>
+  </div>
+  <span class="offline-badge hidden" id="offlineBadge">오프라인</span>
+  <button class="notice-bell-btn" id="noticeBellBtn" title="공지사항">🔔</button>
+  <button class="top-bar-admin hidden" id="adminBtn">관리</button>
+  <div class="top-bar-menu-wrap">
+    <button class="top-bar-menu-btn" id="menuBtn" aria-label="메뉴">⋯</button>
+    <div class="top-bar-menu" id="topBarMenu">
+      <button id="changePwBtn">🔑 비밀번호 변경</button>
+      <hr>
+      <button id="logoutBtn" class="danger">↩ 퇴관 (로그아웃)</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div class="dashboard hidden" id="dashboard">
+  <div class="day-progress hidden" id="dayProgress">
+    <span class="dp-label" id="dpLabel">1일차</span>
+    <div class="dp-bar"><div class="dp-fill" id="dpFill" style="width:0%"></div></div>
+    <span class="dp-count" id="dpCount">0/0</span>
+  </div>
+  <div class="dash-cards">
+    <!-- Current duty card -->
+    <div class="big-card current-card" id="currentCard">
+      <div class="bc-header">
+        <span class="bc-label"><span class="bc-dot"></span>현재 업무</span>
+        <span class="bc-time" id="curTime">—</span>
+      </div>
+      <div class="bc-event" id="curEvent"></div>
+      <div class="bc-divider"></div>
+      <div class="bc-task" id="curTask">—</div>
+      <div class="bc-countdown" id="curCountdown" style="display:none;">
+        <div class="bc-cd-bar"><div class="bc-cd-fill" id="curCdFill" style="width:0%"></div></div>
+        <span class="bc-cd-text" id="curCdText">—</span>
+      </div>
+      <button class="bc-done-btn hidden" id="curDoneBtn">
+        <span class="check-box" id="curDoneCheck"></span>
+        <span id="curDoneText">완료 표시</span>
+      </button>
+      <div class="bc-tap-hint"><span>상세 가이드</span><span class="chev">›</span></div>
+    </div>
+    <!-- Next duty card -->
+    <div class="big-card next-card">
+      <div class="bc-header">
+        <span class="bc-label">▸ 다음 내 업무</span>
+        <span class="bc-time" id="nextTime">—</span>
+      </div>
+      <div class="bc-event" id="nextEvent"></div>
+      <div class="bc-divider"></div>
+      <div class="bc-task" id="nextTask">—</div>
+      <div class="bc-until" id="nextUntil"></div>
+    </div>
+  </div>
+  <div class="todo-section hidden" id="todoSection">
+    <div class="todo-hd">✦ 내 할일</div>
+    <div id="todoList"></div>
+  </div>
+  <button class="open-tt-btn" id="openTTBtn">전체 일정 보기 <span class="arrow">❯</span></button>
+</div>
+
+<!-- ═══ DETAIL SHEET (current task guide) ═══ -->
+<div class="detail-sheet" id="detailSheet">
+  <div class="detail-sheet-inner">
+    <div class="detail-handle"></div>
+    <div class="detail-sheet-hd">
+      <div class="detail-sheet-hd-l">
+        <div class="detail-sheet-eyebrow" id="detailEyebrow">현재 업무 상세</div>
+        <div class="detail-sheet-title" id="detailTitle">—</div>
+        <div class="detail-sheet-time" id="detailTime"></div>
+      </div>
+      <button class="detail-sheet-close" id="detailClose" aria-label="닫기">✕</button>
+    </div>
+    <div class="detail-sheet-body" id="detailBody"></div>
+  </div>
+</div>
+
+<!-- ═══ NOTICE SHEET ═══ -->
+<div class="notice-sheet" id="noticeSheet">
+  <div class="notice-sheet-inner">
+    <div class="notice-sheet-hd">
+      <span class="notice-sheet-title">📢 공지사항</span>
+      <button class="notice-sheet-close" id="noticeSheetClose">✕</button>
+    </div>
+    <div id="noticeSheetBody"></div>
+  </div>
+</div>
+
+<!-- ═══ TIMETABLE PANEL ═══ -->
+<div class="tt-panel" id="ttPanel">
+  <div class="tt-topbar">
+    <button class="tt-back" id="closeTTBtn">← 내 일정</button>
+    <span class="tt-title">타임테이블</span>
+    <div style="width:60px"></div>
+  </div>
+  <div class="tt-filter">
+    <label class="view-toggle">
+      <input type="checkbox" id="showAllToggle">
+      <span class="toggle-track"><span class="toggle-thumb"></span></span>
+      <span class="toggle-label">전체 스텝 보기</span>
+    </label>
+  </div>
+  <div class="tt-day-tabs" role="tablist">
+    <button class="day-tab active" data-day="1" role="tab" aria-selected="true">
+      <span class="tab-main">1일차</span>
+      <span class="tab-sub">五月 八日 (金)</span>
+    </button>
+    <button class="day-tab" data-day="2" role="tab" aria-selected="false">
+      <span class="tab-main">2일차</span>
+      <span class="tab-sub">五月 九日 (土)</span>
+    </button>
+  </div>
+  <div class="tt-body">
+    <div class="day-panel active" id="panel-1">
+      <div class="section-ornament">❁ 　 ❁ 　 ❁</div>
+      <div class="timeline" id="timeline-1"></div>
+    </div>
+    <div class="day-panel" id="panel-2">
+      <div class="section-ornament">❁ 　 ❁ 　 ❁</div>
+      <div class="timeline" id="timeline-2"></div>
+    </div>
+    <div class="tt-footer"><p>2026 MT ✦ 조선의 향연속으로 ✦ 丙午年</p></div>
+  </div>
+</div>
+
+<!-- ═══ LOGIN OVERLAY ═══ -->
+<div id="loginOverlay" class="login-overlay">
+  <div class="login-box">
+    <div class="login-dancheong"></div>
+    <div class="login-body">
+      <svg width="44" height="44" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g transform="translate(50,50)">
+          <ellipse rx="10" ry="22" fill="#D4699A" transform="rotate(0)   translate(0,-22)"/>
+          <ellipse rx="10" ry="22" fill="#C85E8F" transform="rotate(72)  translate(0,-22)"/>
+          <ellipse rx="10" ry="22" fill="#D4699A" transform="rotate(144) translate(0,-22)"/>
+          <ellipse rx="10" ry="22" fill="#C85E8F" transform="rotate(216) translate(0,-22)"/>
+          <ellipse rx="10" ry="22" fill="#D4699A" transform="rotate(288) translate(0,-22)"/>
+          <ellipse rx="4" ry="16" fill="#A0291C" opacity="0.4" transform="rotate(0)   translate(0,-22)"/>
+          <ellipse rx="4" ry="16" fill="#A0291C" opacity="0.4" transform="rotate(72)  translate(0,-22)"/>
+          <ellipse rx="4" ry="16" fill="#A0291C" opacity="0.4" transform="rotate(144) translate(0,-22)"/>
+          <ellipse rx="4" ry="16" fill="#A0291C" opacity="0.4" transform="rotate(216) translate(0,-22)"/>
+          <ellipse rx="4" ry="16" fill="#A0291C" opacity="0.4" transform="rotate(288) translate(0,-22)"/>
+          <circle r="10" fill="#C9A227"/>
+          <circle r="6"  fill="#E8C050"/>
+          <circle r="3"  fill="#A0291C"/>
+          <circle r="1.5" fill="#fff" transform="translate(0,-6)"/>
+          <circle r="1.5" fill="#fff" transform="rotate(72)  translate(0,-6)"/>
+          <circle r="1.5" fill="#fff" transform="rotate(144) translate(0,-6)"/>
+          <circle r="1.5" fill="#fff" transform="rotate(216) translate(0,-6)"/>
+          <circle r="1.5" fill="#fff" transform="rotate(288) translate(0,-6)"/>
+        </g>
+      </svg>
+      <h2 class="login-title">입 패 확 인</h2>
+      <p class="login-subtitle">2026 MT 스텝 여러분을 환영합니다<br>이름과 비밀번호를 입력해 주세요</p>
+      <input type="text" class="login-input" id="loginSelect" placeholder="이름" list="nameDataList" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <datalist id="nameDataList"></datalist>
+      <input type="password" class="login-input" id="loginPw" placeholder="비밀번호" autocomplete="current-password">
+      <button class="login-btn" id="loginBtn">입 장 하 기</button>
+      <div class="login-err" id="loginErr"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PASSWORD CHANGE MODAL ═══ -->
+<div class="pw-modal" id="pwModal">
+  <div class="login-box">
+    <div class="login-dancheong"></div>
+    <div class="login-body">
+      <h2 class="login-title" style="font-size:1.25rem; letter-spacing:0.12em; margin-top:0">비밀번호 변경</h2>
+      <p class="login-subtitle" id="pwModalUser" style="margin-bottom:20px"></p>
+      <input type="password" class="login-input" id="pwCurrent" placeholder="현재 비밀번호" autocomplete="current-password">
+      <input type="password" class="login-input" id="pwNew"     placeholder="새 비밀번호" autocomplete="new-password">
+      <input type="password" class="login-input" id="pwConfirm" placeholder="새 비밀번호 확인" autocomplete="new-password">
+      <button class="login-btn" id="pwSaveBtn">변 경 하 기</button>
+      <button class="login-btn-ghost" id="pwCancelBtn">취소</button>
+      <div id="pwMsg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ADMIN PANEL ═══ -->
+<div class="admin-panel" id="adminPanel">
+  <div class="admin-ph">
+    <button class="admin-close-btn" id="adminClose">✕</button>
+    <span class="admin-ph-title">관리 패널</span>
+    <div style="width:32px"></div>
+  </div>
+  <div class="admin-tab-bar">
+    <button class="admin-tab-btn active" data-tab="tt"><span class="tab-ico">⏱</span>일정</button>
+    <button class="admin-tab-btn" data-tab="todo"><span class="tab-ico">✓</span>할일</button>
+    <button class="admin-tab-btn" data-tab="notice"><span class="tab-ico">🔔</span>공지</button>
+    <button class="admin-tab-btn" data-tab="set"><span class="tab-ico">⚙</span>설정</button>
+  </div>
+  <div class="admin-body" id="adminBody"></div>
+  <div class="admin-save-toast" id="adminSaveToast">✓ 저장됨</div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   API SYNC
+   ═══════════════════════════════════════════ */
+const API_URL = 'https://YOUR-API-ID.execute-api.YOUR-REGION.amazonaws.com/prod/';
+let _pwCache      = {};
+let _todosCache   = {};
+let _noticesCache = [];
+let _apiReady     = false;
+
+async function fetchState() {
+  try {
+    const res   = await fetch(API_URL);
+    const state = await res.json();
+    applyRemoteState(state);
+    _apiReady = true;
+    document.getElementById('offlineBadge')?.classList.add('hidden');
+  } catch(e) {
+    document.getElementById('offlineBadge')?.classList.remove('hidden');
+  }
+}
+
+function applyRemoteState(state) {
+  if (state.passwords) {
+    _pwCache = state.passwords;
+  }
+  if (state.notices) {
+    _noticesCache = state.notices;
+    if (loggedInUser) updateNoticeSection();
+    if (typeof _adminTab !== 'undefined' && _adminTab === 'notice' && adminPanel?.classList.contains('open'))
+      renderAdminNotice();
+  }
+  if (state.todos) {
+    _todosCache = state.todos;
+    if (loggedInUser) updateTodoSection();
+    if (typeof _adminTab !== 'undefined' && _adminTab === 'todo' && adminPanel?.classList.contains('open')) {
+      const ed = document.getElementById('adminTodoEditor');
+      if (ed && _adminPerson) ed.innerHTML = buildTodoEditor();
+    }
+  }
+  if (state.schedule?.day1?.length) {
+    day1.splice(0, day1.length, ...state.schedule.day1);
+    day2.splice(0, day2.length, ...state.schedule.day2);
+    renderTimeline('timeline-1', day1, '2026-05-08');
+    renderTimeline('timeline-2', day2, '2026-05-09');
+    if (loggedInUser) {
+      updateDashboard();
+      if (ttPanel?.classList.contains('open')) applyViewMode();
+    }
+  }
+  if (state.sim !== undefined) {
+    const remOn = state.sim.on || false;
+    const remT  = state.sim.t  || null;
+    const changed = (remOn !== simMode || remT !== debugNow);
+    simMode  = remOn;
+    debugNow = remT;
+    if (changed) {
+      saveSim();
+      if (loggedInUser) simRefresh();
+      const tog = document.getElementById('simModeToggle');
+      const inp = document.getElementById('simTimeInp');
+      const lbl = document.querySelector('.admin-sim-label');
+      if (tog) tog.checked = simMode;
+      if (inp) { inp.value = debugNow || ''; inp.disabled = !simMode; }
+      if (lbl) lbl.className = 'admin-sim-label' + (simMode ? ' admin-sim-active' : '');
+    }
+  }
+}
+
+async function pushState(key, data) {
+  try {
+    await fetch(API_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key, data })
+    });
+  } catch(e) {}
+}
+
+fetchState();
+setInterval(fetchState, 5000);
+
+/* ═══════════════════════════════════════════
+   SCHEDULE DATA
+   ═══════════════════════════════════════════ */
+let day1 = [
+  { time: "09:00", event: "선발대 집합 및 행사장 세팅", duties: [
+    { role: "4학년 과대", name: "Member37", duty: "집합 및 짐 정리" },
+    { role: "부학생회장", name: "Member04", duty: "집합 및 짐 정리" },
+    { role: "기획국장", name: "Member27", duty: "집합 및 짐 정리" },
+    { role: "기획국원", name: "Member20", duty: "집합 및 짐 정리" },
+    { role: "기획국원", name: "Member24", duty: "집합 및 짐 정리" },
+    { role: "기획국원", name: "Member05", duty: "집합 및 짐 정리" },
+    { role: "방송국장", name: "Member18", duty: "집합 및 짐 정리" },
+    { role: "교육국원", name: "Member35", duty: "집합 및 짐 정리" },
+    { role: "엠티 도우미", name: "Member03", duty: "집합 및 짐 정리" }
+  ]},
+  { time: "10:30", event: "선발대 도착 및 행사장 세팅", duties: [
+    { role: "4학년 과대", name: "Member37", duty: "행사장 이동 → 현수막 부착" },
+    { role: "부학생회장", name: "Member04", duty: "무대 세팅(노트북·음향·PPT) → 교수님 자리 세팅" },
+    { role: "기획국장", name: "Member27", duty: "물품 구매 → 선발대 물품 확인 → 본부석 세팅" },
+    { role: "기획국원", name: "Member20", duty: "물품 구매 → 숙소 명단 부착 → 본부석 세팅" },
+    { role: "기획국원", name: "Member24", duty: "물품 구매 → 숙소 명단 부착 → 본부석 세팅" },
+    { role: "기획국원", name: "Member05", duty: "행사장 이동 → 무대 세팅" },
+    { role: "방송국장", name: "Member18", duty: "행사장 이동 → 카메라 세팅" },
+    { role: "교육국원", name: "Member35", duty: "행사장 이동 → 교수님 자리 세팅" },
+    { role: "엠티 도우미", name: "Member03", duty: "행사장 이동 및 오프라인 물품 구매" }
+  ]},
+  { time: "12:00", event: "후발대 집합", duties: [
+    { role: "학생회장", name: "Member36", duty: "집합 및 버스 짐 옮기기" },
+    { role: "교육국장", name: "Member32", duty: "집합 및 버스 짐 옮기기" },
+    { role: "교육국원", name: "Member21", duty: "집합 및 버스 짐 옮기기" },
+    { role: "교육국원", name: "Member28", duty: "집합 및 버스 짐 옮기기" },
+    { role: "교육국원", name: "Member41", duty: "집합 및 버스 짐 옮기기" },
+    { role: "기획국원", name: "Member39", duty: "집합 및 버스 짐 옮기기" },
+    { role: "방송국원", name: "Member07", duty: "집합 및 버스 짐 옮기기" },
+    { role: "방송국원", name: "Member12", duty: "집합 및 버스 짐 옮기기" },
+    { role: "방송국원", name: "Member16", duty: "집합 및 버스 짐 옮기기" },
+    { role: "방송국원", name: "Member29", duty: "집합 및 버스 짐 옮기기" },
+    { role: "집행국장", name: "Member43", duty: "후발대 물품 확인" },
+    { role: "집행국원", name: "Member01", duty: "후발대 물품 확인" },
+    { role: "집행국원", name: "Member02", duty: "후발대 물품 확인" },
+    { role: "집행국원", name: "Member31", duty: "후발대 물품 확인" },
+    { role: "집행국원", name: "Member33", duty: "후발대 물품 확인" },
+    { role: "홍보국장", name: "Member34", duty: "집합 및 버스 짐 옮기기" },
+    { role: "홍보국원", name: "Member08", duty: "집합 및 버스 짐 옮기기" },
+    { role: "홍보국원", name: "Member10", duty: "집합 및 버스 짐 옮기기" },
+    { role: "홍보국원", name: "Member38", duty: "집합 및 버스 짐 옮기기" },
+    { role: "2학년 과대", name: "Member26", duty: "집합 및 버스 짐 옮기기" },
+    { role: "1학년 과대", name: "Member42", duty: "집합 및 버스 짐 옮기기" },
+    { role: "3학년 과대", name: "Member30", duty: "집합 및 버스 짐 옮기기" },
+        { role: "엠티 도우미", name: "Member22", duty: "1조 조원 집합 확인" },
+    { role: "엠티 도우미", name: "Member13", duty: "3조 조원 집합 확인" },
+    { role: "엠티 도우미", name: "Member15", duty: "4조 조원 집합 확인" },
+    { role: "엠티 도우미", name: "Member09", duty: "5조 조원 집합 확인" },
+    { role: "엠티 도우미", name: "Member44", duty: "6조 조원 집합 확인" },
+    { role: "엠티 도우미", name: "Member14", duty: "7조 조원 집합 확인" },
+    { role: "엠티 도우미", name: "Member19", duty: "8조 조원 집합 확인" },
+    { role: "엠티 도우미", name: "Member23", duty: "9조 조원 집합 확인" },
+    { role: "엠티 도우미", name: "Member17", duty: "10조 조원 집합 확인" },
+    { role: "엠티 도우미", name: "Member06", duty: "11조 조원 집합 확인" },
+    { role: "엠티 도우미", name: "Member40", duty: "12조 조원 집합 확인" },
+    { role: "엠티 도우미", name: "Member11", duty: "13조 조원 집합 확인" },
+    { role: "엠티 도우미", name: "Member25", duty: "15조 조원 집합 확인" },
+    { role: "엠티 도우미", name: "Member10", duty: "14조 조원 집합 확인" }
+  ]},
+  { time: "13:00", event: "재학생 집합 및 버스 탑승", duties: [
+    { role: "엠티 도우미", name: "Member03", duty: "조별 탑승 안내 및 인원 관리" },
+    { role: "학생회장", name: "Member36", duty: "1번 버스 담당 · 인원 체크" },
+    { role: "교육국장", name: "Member32", duty: "2번 버스 담당 · 인원 체크" },
+    { role: "교육국원", name: "Member21", duty: "2번 버스 안내" },
+    { role: "교육국원", name: "Member28", duty: "2번 버스 안내" },
+    { role: "교육국원", name: "Member41", duty: "2번 버스 명찰 배부" },
+    { role: "기획국원", name: "Member39", duty: "2번 버스 명찰 배부" },
+    { role: "방송국원", name: "Member07", duty: "1번 버스 명찰 배부" },
+    { role: "방송국원", name: "Member12", duty: "1번 버스 명찰 배부" },
+    { role: "방송국원", name: "Member16", duty: "4번 버스 명찰 배부" },
+    { role: "방송국원", name: "Member29", duty: "4번 버스 명찰 배부" },
+    { role: "집행국장", name: "Member43", duty: "3번 버스 담당 · 인원 체크" },
+    { role: "집행국원", name: "Member01", duty: "3번 버스 안내" },
+    { role: "집행국원", name: "Member02", duty: "3번 버스 안내" },
+    { role: "집행국원", name: "Member31", duty: "3번 버스 명찰 배부" },
+    { role: "집행국원", name: "Member33", duty: "3번 버스 명찰 배부" },
+    { role: "홍보국장", name: "Member34", duty: "4번 버스 담당 · 인원 체크" },
+    { role: "홍보국원", name: "Member08", duty: "4번 버스 안내" },
+    { role: "홍보국원", name: "Member10", duty: "4번 버스 안내" },
+    { role: "홍보국원", name: "Member38", duty: "4번 버스 명찰 배부" },
+    { role: "2학년 과대", name: "Member26", duty: "1번 버스 안내" },
+    { role: "1학년 과대", name: "Member42", duty: "1번 버스 안내" },
+    { role: "3학년 과대", name: "Member30", duty: "4번 버스 명찰 배부" },
+        { role: "엠티 도우미", name: "Member22", duty: "1조 버스 탑승 안내 및 인원 체크" },
+    { role: "엠티 도우미", name: "Member13", duty: "3조 버스 탑승 안내 및 인원 체크" },
+    { role: "엠티 도우미", name: "Member15", duty: "4조 버스 탑승 안내 및 인원 체크" },
+    { role: "엠티 도우미", name: "Member09", duty: "5조 버스 탑승 안내 및 인원 체크" },
+    { role: "엠티 도우미", name: "Member44", duty: "6조 버스 탑승 안내 및 인원 체크" },
+    { role: "엠티 도우미", name: "Member14", duty: "7조 버스 탑승 안내 및 인원 체크" },
+    { role: "엠티 도우미", name: "Member19", duty: "8조 버스 탑승 안내 및 인원 체크" },
+    { role: "엠티 도우미", name: "Member23", duty: "9조 버스 탑승 안내 및 인원 체크" },
+    { role: "엠티 도우미", name: "Member17", duty: "10조 버스 탑승 안내 및 인원 체크" },
+    { role: "엠티 도우미", name: "Member06", duty: "11조 버스 탑승 안내 및 인원 체크" },
+    { role: "엠티 도우미", name: "Member40", duty: "12조 버스 탑승 안내 및 인원 체크" },
+    { role: "엠티 도우미", name: "Member11", duty: "13조 버스 탑승 안내 및 인원 체크" },
+    { role: "엠티 도우미", name: "Member25", duty: "15조 버스 탑승 안내 및 인원 체크" },
+    { role: "엠티 도우미", name: "Member10", duty: "14조 버스 탑승 안내 및 인원 체크" }
+  ]},
+  { time: "14:00", event: "재학생 버스 이동", duties: [] },
+  { time: "15:00", event: "버스 도착 및 짐 정리", duties: [
+    { role: "기획국장", name: "Member27", duty: "OT 준비 (PPT)" },
+    { role: "기획국원", name: "Member20", duty: "엘리베이터 앞 짐 위치 안내" },
+    { role: "기획국원", name: "Member24", duty: "엘리베이터 앞 짐 위치 안내" },
+    { role: "엠티 도우미", name: "Member03", duty: "짐 옮기기 보조" },
+    { role: "학생회장", name: "Member36", duty: "1번 버스 확인 → 강당 인솔" },
+    { role: "교육국장", name: "Member32", duty: "2번 버스 확인 → 강당 인솔" },
+    { role: "교육국원", name: "Member21", duty: "2번 버스 확인" },
+    { role: "교육국원", name: "Member28", duty: "2번 버스 확인" },
+    { role: "교육국원", name: "Member41", duty: "짐 옮기기 및 개인 짐 정리" },
+    { role: "기획국원", name: "Member39", duty: "짐 옮기기 및 개인 짐 정리" },
+    { role: "집행국장", name: "Member43", duty: "3번 버스 확인 → 강당 인솔" },
+    { role: "집행국원", name: "Member01", duty: "3번 버스 확인" },
+    { role: "집행국원", name: "Member02", duty: "3번 버스 확인" },
+    { role: "집행국원", name: "Member31", duty: "짐 옮기기 및 개인 짐 정리" },
+    { role: "집행국원", name: "Member33", duty: "짐 옮기기 및 개인 짐 정리" },
+    { role: "홍보국장", name: "Member34", duty: "4번 버스 확인 → 강당 인솔" },
+    { role: "홍보국원", name: "Member08", duty: "4번 버스 확인" },
+    { role: "홍보국원", name: "Member10", duty: "4번 버스 확인" },
+    { role: "2학년 과대", name: "Member26", duty: "1번 버스 확인" },
+    { role: "1학년 과대", name: "Member42", duty: "1번 버스 확인" },
+    { role: "3학년 과대", name: "Member30", duty: "4번 버스 확인" },
+        { role: "엠티 도우미", name: "Member22", duty: "1조 인솔 → 짐 정리 보조" },
+    { role: "엠티 도우미", name: "Member13", duty: "3조 인솔 → 짐 정리 보조" },
+    { role: "엠티 도우미", name: "Member15", duty: "4조 인솔 → 짐 정리 보조" },
+    { role: "엠티 도우미", name: "Member09", duty: "5조 인솔 → 짐 정리 보조" },
+    { role: "엠티 도우미", name: "Member44", duty: "6조 인솔 → 짐 정리 보조" },
+    { role: "엠티 도우미", name: "Member14", duty: "7조 인솔 → 짐 정리 보조" },
+    { role: "엠티 도우미", name: "Member19", duty: "8조 인솔 → 짐 정리 보조" },
+    { role: "엠티 도우미", name: "Member23", duty: "9조 인솔 → 짐 정리 보조" },
+    { role: "엠티 도우미", name: "Member17", duty: "10조 인솔 → 짐 정리 보조" },
+    { role: "엠티 도우미", name: "Member06", duty: "11조 인솔 → 짐 정리 보조" },
+    { role: "엠티 도우미", name: "Member40", duty: "12조 인솔 → 짐 정리 보조" },
+    { role: "엠티 도우미", name: "Member11", duty: "13조 인솔 → 짐 정리 보조" },
+    { role: "엠티 도우미", name: "Member25", duty: "15조 인솔 → 짐 정리 보조" },
+    { role: "엠티 도우미", name: "Member10", duty: "14조 인솔 → 짐 정리 보조" }
+  ]},
+  { time: "15:50", event: "숙소 이동 및 OT", duties: [
+    { role: "부학생회장", name: "Member04", duty: "PPT · 카톡방 안내 준비" },
+    { role: "기획국장", name: "Member27", duty: "PPT" },
+    { role: "기획국원", name: "Member20", duty: "숙소 층 안내" },
+    { role: "기획국원", name: "Member24", duty: "숙소 층 안내" },
+    { role: "교육국원", name: "Member35", duty: "숙소 엘리베이터 앞 안내" },
+    { role: "엠티 도우미", name: "Member03", duty: "조별 카톡방 개설 → 조 인원 체크" },
+    { role: "학생회장", name: "Member36", duty: "숙소 배정 안내 (사회)" },
+        { role: "엠티 도우미", name: "Member22", duty: "1조 인원 체크 → 카톡방 확인" },
+    { role: "엠티 도우미", name: "Member13", duty: "3조 인원 체크 → 카톡방 확인" },
+    { role: "엠티 도우미", name: "Member15", duty: "4조 인원 체크 → 카톡방 확인" },
+    { role: "엠티 도우미", name: "Member09", duty: "5조 인원 체크 → 카톡방 확인" },
+    { role: "엠티 도우미", name: "Member44", duty: "6조 인원 체크 → 카톡방 확인" },
+    { role: "엠티 도우미", name: "Member14", duty: "7조 인원 체크 → 카톡방 확인" },
+    { role: "엠티 도우미", name: "Member19", duty: "8조 인원 체크 → 카톡방 확인" },
+    { role: "엠티 도우미", name: "Member23", duty: "9조 인원 체크 → 카톡방 확인" },
+    { role: "엠티 도우미", name: "Member17", duty: "10조 인원 체크 → 카톡방 확인" },
+    { role: "엠티 도우미", name: "Member06", duty: "11조 인원 체크 → 카톡방 확인" },
+    { role: "엠티 도우미", name: "Member40", duty: "12조 인원 체크 → 카톡방 확인" },
+    { role: "엠티 도우미", name: "Member11", duty: "13조 인원 체크 → 카톡방 확인" },
+    { role: "엠티 도우미", name: "Member25", duty: "15조 인원 체크 → 카톡방 확인" },
+    { role: "엠티 도우미", name: "Member10", duty: "14조 인원 체크 → 카톡방 확인" }
+  ]},
+  { time: "16:10", event: "레크레이션 ①도전 장원급제 ②미션 무궁화 ③대형 윷놀이", duties: [
+    { role: "4학년 과대", name: "Member37", duty: "조별 진행 보조" },
+    { role: "부학생회장", name: "Member04", duty: "심판 (무궁화) → 윷놀이 보조" },
+    { role: "기획국장", name: "Member27", duty: "진행 (사회)" },
+    { role: "기획국원", name: "Member20", duty: "점수 계산" },
+    { role: "기획국원", name: "Member24", duty: "PPT" },
+    { role: "기획국원", name: "Member05", duty: "진행 보조 → 점수 합산 (윷)" },
+    { role: "방송국장", name: "Member18", duty: "심판 (무궁화) → 윷놀이 보조" },
+    { role: "교육국원", name: "Member35", duty: "윷놀이 진행 보조" },
+    { role: "엠티 도우미", name: "Member03", duty: "조별 정답 전달 → 나갈 순서 취합 → 윷말 역할 취합" },
+    { role: "학생회장", name: "Member36", duty: "심판 (무궁화) → 윷놀이 보조" },
+    { role: "교육국장", name: "Member32", duty: "심판 (무궁화) → 윷놀이 보조" },
+    { role: "교육국원", name: "Member21", duty: "조별 진행 보조" },
+    { role: "교육국원", name: "Member28", duty: "조별 진행 보조" },
+    { role: "교육국원", name: "Member41", duty: "조별 진행 보조" },
+    { role: "기획국원", name: "Member39", duty: "점수 합산 (윷)" },
+    { role: "방송국원", name: "Member07", duty: "촬영" },
+    { role: "방송국원", name: "Member12", duty: "촬영" },
+    { role: "방송국원", name: "Member16", duty: "촬영" },
+    { role: "방송국원", name: "Member29", duty: "촬영" },
+    { role: "집행국장", name: "Member43", duty: "심판 (무궁화) → 윷놀이 보조" },
+    { role: "홍보국장", name: "Member34", duty: "심판 (무궁화) → 윷놀이 보조" },
+        { role: "엠티 도우미", name: "Member22", duty: "1조 진행 보조" },
+    { role: "엠티 도우미", name: "Member13", duty: "3조 진행 보조" },
+    { role: "엠티 도우미", name: "Member15", duty: "4조 진행 보조" },
+    { role: "엠티 도우미", name: "Member09", duty: "5조 진행 보조" },
+    { role: "엠티 도우미", name: "Member44", duty: "6조 진행 보조" },
+    { role: "엠티 도우미", name: "Member14", duty: "7조 진행 보조" },
+    { role: "엠티 도우미", name: "Member19", duty: "8조 진행 보조" },
+    { role: "엠티 도우미", name: "Member23", duty: "9조 진행 보조" },
+    { role: "엠티 도우미", name: "Member17", duty: "10조 진행 보조" },
+    { role: "엠티 도우미", name: "Member06", duty: "11조 진행 보조" },
+    { role: "엠티 도우미", name: "Member40", duty: "12조 진행 보조" },
+    { role: "엠티 도우미", name: "Member11", duty: "13조 진행 보조" },
+    { role: "엠티 도우미", name: "Member25", duty: "15조 진행 보조" },
+    { role: "엠티 도우미", name: "Member10", duty: "14조 진행 보조" }
+  ]},
+  { time: "17:50", event: "인원 체크 및 식당 안내", duties: [
+    { role: "부학생회장", name: "Member04", duty: "교수님 식당 안내" },
+    { role: "엠티 도우미", name: "Member03", duty: "조별 인원 체크" },
+    { role: "학생회장", name: "Member36", duty: "교수님 식당 안내" },
+        { role: "엠티 도우미", name: "Member22", duty: "1조 인원 체크" },
+    { role: "엠티 도우미", name: "Member13", duty: "3조 인원 체크" },
+    { role: "엠티 도우미", name: "Member15", duty: "4조 인원 체크" },
+    { role: "엠티 도우미", name: "Member09", duty: "5조 인원 체크" },
+    { role: "엠티 도우미", name: "Member44", duty: "6조 인원 체크" },
+    { role: "엠티 도우미", name: "Member14", duty: "7조 인원 체크" },
+    { role: "엠티 도우미", name: "Member19", duty: "8조 인원 체크" },
+    { role: "엠티 도우미", name: "Member23", duty: "9조 인원 체크" },
+    { role: "엠티 도우미", name: "Member17", duty: "10조 인원 체크" },
+    { role: "엠티 도우미", name: "Member06", duty: "11조 인원 체크" },
+    { role: "엠티 도우미", name: "Member40", duty: "12조 인원 체크" },
+    { role: "엠티 도우미", name: "Member11", duty: "13조 인원 체크" },
+    { role: "엠티 도우미", name: "Member25", duty: "15조 인원 체크" },
+    { role: "엠티 도우미", name: "Member10", duty: "14조 인원 체크" }
+  ]},
+  { time: "18:10", event: "저녁 식사 및 리허설 준비", duties: [
+    { role: "부학생회장", name: "Member04", duty: "가장 마지막 식사" },
+    { role: "기획국장", name: "Member27", duty: "장기자랑 리허설 진행" },
+    { role: "기획국원", name: "Member24", duty: "리허설 동선 안내" },
+    { role: "기획국원", name: "Member05", duty: "리허설 음향 점검" },
+    { role: "방송국장", name: "Member18", duty: "카메라 정비 및 세팅" },
+    { role: "교육국원", name: "Member35", duty: "주막 준비" },
+    { role: "엠티 도우미", name: "Member03", duty: "조원들과 식사" },
+    { role: "학생회장", name: "Member36", duty: "가장 마지막 식사" },
+    { role: "교육국장", name: "Member32", duty: "주막 준비" },
+    { role: "교육국원", name: "Member21", duty: "주막 준비" },
+    { role: "교육국원", name: "Member28", duty: "주막 준비" },
+    { role: "교육국원", name: "Member41", duty: "주막 준비" },
+    { role: "방송국원", name: "Member07", duty: "카메라 정비 및 세팅" },
+    { role: "방송국원", name: "Member12", duty: "카메라 정비 및 세팅" },
+    { role: "방송국원", name: "Member16", duty: "카메라 정비 및 세팅" },
+    { role: "방송국원", name: "Member29", duty: "카메라 정비 및 세팅" },
+    { role: "집행국장", name: "Member43", duty: "안주·주류 정리 및 주문" },
+    { role: "집행국원", name: "Member01", duty: "안주·주류 정리" },
+    { role: "집행국원", name: "Member02", duty: "안주·주류 정리" },
+    { role: "집행국원", name: "Member31", duty: "안주·주류 정리" },
+    { role: "집행국원", name: "Member33", duty: "안주·주류 정리" },
+        { role: "엠티 도우미", name: "Member22", duty: "1조 조원과 식사" },
+    { role: "엠티 도우미", name: "Member13", duty: "3조 조원과 식사" },
+    { role: "엠티 도우미", name: "Member15", duty: "4조 조원과 식사" },
+    { role: "엠티 도우미", name: "Member09", duty: "5조 조원과 식사" },
+    { role: "엠티 도우미", name: "Member44", duty: "6조 조원과 식사" },
+    { role: "엠티 도우미", name: "Member14", duty: "7조 조원과 식사" },
+    { role: "엠티 도우미", name: "Member19", duty: "8조 조원과 식사" },
+    { role: "엠티 도우미", name: "Member23", duty: "9조 조원과 식사" },
+    { role: "엠티 도우미", name: "Member17", duty: "10조 조원과 식사" },
+    { role: "엠티 도우미", name: "Member06", duty: "11조 조원과 식사" },
+    { role: "엠티 도우미", name: "Member40", duty: "12조 조원과 식사" },
+    { role: "엠티 도우미", name: "Member11", duty: "13조 조원과 식사" },
+    { role: "엠티 도우미", name: "Member25", duty: "15조 조원과 식사" },
+    { role: "엠티 도우미", name: "Member10", duty: "14조 조원과 식사" }
+  ]},
+  { time: "19:50", event: "장기자랑 & 복면가왕", duties: [
+    { role: "기획국장", name: "Member27", duty: "진행" },
+    { role: "기획국원", name: "Member24", duty: "PPT · 참가자 이동 안내" },
+    { role: "기획국원", name: "Member05", duty: "음향 담당" },
+    { role: "방송국장", name: "Member18", duty: "촬영" },
+    { role: "엠티 도우미", name: "Member03", duty: "조별 분위기 조성" },
+    { role: "방송국원", name: "Member07", duty: "촬영" },
+    { role: "방송국원", name: "Member12", duty: "촬영" },
+    { role: "방송국원", name: "Member16", duty: "촬영" },
+    { role: "방송국원", name: "Member29", duty: "촬영" },
+    { role: "집행국장", name: "Member43", duty: "물풀 관리" },
+    { role: "집행국원", name: "Member01", duty: "물풀 관리" },
+    { role: "집행국원", name: "Member02", duty: "물풀 관리" },
+    { role: "집행국원", name: "Member31", duty: "물풀 관리" },
+    { role: "집행국원", name: "Member33", duty: "물풀 관리" },
+        { role: "엠티 도우미", name: "Member22", duty: "1조 분위기 조성" },
+    { role: "엠티 도우미", name: "Member13", duty: "3조 분위기 조성" },
+    { role: "엠티 도우미", name: "Member15", duty: "4조 분위기 조성" },
+    { role: "엠티 도우미", name: "Member09", duty: "5조 분위기 조성" },
+    { role: "엠티 도우미", name: "Member44", duty: "6조 분위기 조성" },
+    { role: "엠티 도우미", name: "Member14", duty: "7조 분위기 조성" },
+    { role: "엠티 도우미", name: "Member19", duty: "8조 분위기 조성" },
+    { role: "엠티 도우미", name: "Member23", duty: "9조 분위기 조성" },
+    { role: "엠티 도우미", name: "Member17", duty: "10조 분위기 조성" },
+    { role: "엠티 도우미", name: "Member06", duty: "11조 분위기 조성" },
+    { role: "엠티 도우미", name: "Member40", duty: "12조 분위기 조성" },
+    { role: "엠티 도우미", name: "Member11", duty: "13조 분위기 조성" },
+    { role: "엠티 도우미", name: "Member25", duty: "15조 분위기 조성" },
+    { role: "엠티 도우미", name: "Member10", duty: "14조 분위기 조성" }
+  ]},
+  { time: "21:30", event: "교수님 건배사", duties: [
+    { role: "부학생회장", name: "Member04", duty: "마이크 전달 및 무대 안내" },
+    { role: "엠티 도우미", name: "Member03", duty: "조별 술잔 받아가기" },
+    { role: "학생회장", name: "Member36", duty: "진행" },
+    { role: "집행국장", name: "Member43", duty: "술 관리" },
+    { role: "집행국원", name: "Member01", duty: "술 관리" },
+    { role: "집행국원", name: "Member02", duty: "술 관리" },
+    { role: "집행국원", name: "Member31", duty: "술 관리" },
+    { role: "집행국원", name: "Member33", duty: "술 관리" },
+        { role: "엠티 도우미", name: "Member22", duty: "1조 술잔 배분" },
+    { role: "엠티 도우미", name: "Member13", duty: "3조 술잔 배분" },
+    { role: "엠티 도우미", name: "Member15", duty: "4조 술잔 배분" },
+    { role: "엠티 도우미", name: "Member09", duty: "5조 술잔 배분" },
+    { role: "엠티 도우미", name: "Member44", duty: "6조 술잔 배분" },
+    { role: "엠티 도우미", name: "Member14", duty: "7조 술잔 배분" },
+    { role: "엠티 도우미", name: "Member19", duty: "8조 술잔 배분" },
+    { role: "엠티 도우미", name: "Member23", duty: "9조 술잔 배분" },
+    { role: "엠티 도우미", name: "Member17", duty: "10조 술잔 배분" },
+    { role: "엠티 도우미", name: "Member06", duty: "11조 술잔 배분" },
+    { role: "엠티 도우미", name: "Member40", duty: "12조 술잔 배분" },
+    { role: "엠티 도우미", name: "Member11", duty: "13조 술잔 배분" },
+    { role: "엠티 도우미", name: "Member25", duty: "15조 술잔 배분" },
+    { role: "엠티 도우미", name: "Member10", duty: "14조 술잔 배분" }
+  ]},
+  { time: "22:00", event: "주막 운영 및 술타임", duties: [
+    { role: "기획국장", name: "Member27", duty: "주막 안내 진행" },
+    { role: "기획국원", name: "Member24", duty: "PPT · 안주 체크" },
+    { role: "교육국원", name: "Member35", duty: "주막 운영" },
+    { role: "엠티 도우미", name: "Member03", duty: "조별 착석 안내 및 분위기 조성" },
+    { role: "교육국장", name: "Member32", duty: "주막 운영" },
+    { role: "교육국원", name: "Member21", duty: "주막 운영" },
+    { role: "교육국원", name: "Member28", duty: "주막 운영" },
+    { role: "교육국원", name: "Member41", duty: "주막 운영" },
+    { role: "집행국장", name: "Member43", duty: "술·안주 배부" },
+    { role: "집행국원", name: "Member01", duty: "술·안주 배부" },
+    { role: "집행국원", name: "Member02", duty: "술·안주 배부" },
+    { role: "집행국원", name: "Member31", duty: "술·안주 배부" },
+    { role: "집행국원", name: "Member33", duty: "술·안주 배부" },
+        { role: "엠티 도우미", name: "Member22", duty: "1조 착석 안내 및 분위기 조성" },
+    { role: "엠티 도우미", name: "Member13", duty: "3조 착석 안내 및 분위기 조성" },
+    { role: "엠티 도우미", name: "Member15", duty: "4조 착석 안내 및 분위기 조성" },
+    { role: "엠티 도우미", name: "Member09", duty: "5조 착석 안내 및 분위기 조성" },
+    { role: "엠티 도우미", name: "Member44", duty: "6조 착석 안내 및 분위기 조성" },
+    { role: "엠티 도우미", name: "Member14", duty: "7조 착석 안내 및 분위기 조성" },
+    { role: "엠티 도우미", name: "Member19", duty: "8조 착석 안내 및 분위기 조성" },
+    { role: "엠티 도우미", name: "Member23", duty: "9조 착석 안내 및 분위기 조성" },
+    { role: "엠티 도우미", name: "Member17", duty: "10조 착석 안내 및 분위기 조성" },
+    { role: "엠티 도우미", name: "Member06", duty: "11조 착석 안내 및 분위기 조성" },
+    { role: "엠티 도우미", name: "Member40", duty: "12조 착석 안내 및 분위기 조성" },
+    { role: "엠티 도우미", name: "Member11", duty: "13조 착석 안내 및 분위기 조성" },
+    { role: "엠티 도우미", name: "Member25", duty: "15조 착석 안내 및 분위기 조성" },
+    { role: "엠티 도우미", name: "Member10", duty: "14조 착석 안내 및 분위기 조성" }
+  ]},
+  { time: "02:00", event: "자유 시간", duties: [], night: true }
+];
+
+let day2 = [
+  { time: "06:00", event: "숙소 이동 및 강당 정리", duties: [
+    { role: "4학년 과대", name: "Member37", duty: "강당 정리 및 분실물 관리" },
+    { role: "부학생회장", name: "Member04", duty: "강당 정리 및 분실물 관리" },
+    { role: "기획국장", name: "Member27", duty: "강당 정리 및 분실물 관리" },
+    { role: "기획국원", name: "Member20", duty: "강당 정리 및 분실물 관리" },
+    { role: "기획국원", name: "Member24", duty: "강당 정리 및 분실물 관리" },
+    { role: "기획국원", name: "Member05", duty: "강당 정리 및 분실물 관리" },
+    { role: "방송국장", name: "Member18", duty: "강당 정리 및 분실물 관리" },
+    { role: "교육국원", name: "Member35", duty: "강당 정리 및 분실물 관리" },
+    { role: "MT도우미", name: "Member03", duty: "인원 관리" },
+    { role: "학생회장", name: "Member36", duty: "강당 정리 및 분실물 관리" },
+    { role: "교육국장", name: "Member32", duty: "강당 정리 및 분실물 관리" },
+    { role: "교육국원", name: "Member21", duty: "강당 정리 및 분실물 관리" },
+    { role: "교육국원", name: "Member28", duty: "강당 정리 및 분실물 관리" },
+    { role: "교육국원", name: "Member41", duty: "강당 정리 및 분실물 관리" },
+    { role: "기획국원", name: "Member39", duty: "강당 정리 및 분실물 관리" },
+    { role: "방송국원", name: "Member07", duty: "강당 정리 및 분실물 관리" },
+    { role: "방송국원", name: "Member12", duty: "강당 정리 및 분실물 관리" },
+    { role: "방송국원", name: "Member16", duty: "강당 정리 및 분실물 관리" },
+    { role: "방송국원", name: "Member29", duty: "강당 정리 및 분실물 관리" },
+    { role: "집행국장", name: "Member43", duty: "강당 정리 및 분실물 관리" },
+    { role: "집행국원", name: "Member01", duty: "강당 정리 및 분실물 관리" },
+    { role: "집행국원", name: "Member02", duty: "강당 정리 및 분실물 관리" },
+    { role: "집행국원", name: "Member31", duty: "강당 정리 및 분실물 관리" },
+    { role: "집행국원", name: "Member33", duty: "강당 정리 및 분실물 관리" },
+    { role: "홍보국장", name: "Member34", duty: "강당 정리 및 분실물 관리" },
+    { role: "홍보국원", name: "Member08", duty: "강당 정리 및 분실물 관리" },
+    { role: "홍보국원", name: "Member10", duty: "강당 정리 및 분실물 관리" },
+    { role: "홍보국원", name: "Member38", duty: "강당 정리 및 분실물 관리" },
+    { role: "2학년 과대", name: "Member26", duty: "강당 정리 및 분실물 관리" },
+    { role: "1학년 과대", name: "Member42", duty: "강당 정리 및 분실물 관리" },
+    { role: "3학년 과대", name: "Member30", duty: "강당 정리 및 분실물 관리" },
+        { role: "엠티 도우미", name: "Member22", duty: "1조 인원 관리" },
+    { role: "엠티 도우미", name: "Member13", duty: "3조 인원 관리" },
+    { role: "엠티 도우미", name: "Member15", duty: "4조 인원 관리" },
+    { role: "엠티 도우미", name: "Member09", duty: "5조 인원 관리" },
+    { role: "엠티 도우미", name: "Member44", duty: "6조 인원 관리" },
+    { role: "엠티 도우미", name: "Member14", duty: "7조 인원 관리" },
+    { role: "엠티 도우미", name: "Member19", duty: "8조 인원 관리" },
+    { role: "엠티 도우미", name: "Member23", duty: "9조 인원 관리" },
+    { role: "엠티 도우미", name: "Member17", duty: "10조 인원 관리" },
+    { role: "엠티 도우미", name: "Member06", duty: "11조 인원 관리" },
+    { role: "엠티 도우미", name: "Member40", duty: "12조 인원 관리" },
+    { role: "엠티 도우미", name: "Member11", duty: "13조 인원 관리" },
+    { role: "엠티 도우미", name: "Member25", duty: "15조 인원 관리" },
+    { role: "엠티 도우미", name: "Member10", duty: "14조 인원 관리" }
+  ]},
+  { time: "08:00", event: "아침 식사 (라면)", duties: [
+    { role: "부학생회장", name: "Member04", duty: "라면 배부" },
+    { role: "기획국장", name: "Member27", duty: "라면 배부" },
+    { role: "집행국장", name: "Member43", duty: "라면 배부" },
+    { role: "집행국원", name: "Member02", duty: "라면 배부" }
+  ]},
+  { time: "10:00", event: "버스 탑승 및 귀가 준비", duties: [
+    { role: "4학년 과대", name: "Member37", duty: "각 버스 인원 체크" },
+    { role: "방송국장", name: "Member18", duty: "서울행 버스 담당" },
+    { role: "MT도우미", name: "Member03", duty: "각 조 인원 관리" },
+    { role: "학생회장", name: "Member36", duty: "안성행 버스 담당" },
+    { role: "교육국장", name: "Member32", duty: "안성행 인원 체크" },
+    { role: "홍보국장", name: "Member34", duty: "안성행 인원 체크" },
+    { role: "2학년 과대", name: "Member26", duty: "서울행 인원 체크" },
+    { role: "1학년 과대", name: "Member42", duty: "각 버스 인원 체크" },
+    { role: "3학년 과대", name: "Member30", duty: "각 버스 인원 체크" },
+        { role: "엠티 도우미", name: "Member22", duty: "1조 귀가 인원 관리" },
+    { role: "엠티 도우미", name: "Member13", duty: "3조 귀가 인원 관리" },
+    { role: "엠티 도우미", name: "Member15", duty: "4조 귀가 인원 관리" },
+    { role: "엠티 도우미", name: "Member09", duty: "5조 귀가 인원 관리" },
+    { role: "엠티 도우미", name: "Member44", duty: "6조 귀가 인원 관리" },
+    { role: "엠티 도우미", name: "Member14", duty: "7조 귀가 인원 관리" },
+    { role: "엠티 도우미", name: "Member19", duty: "8조 귀가 인원 관리" },
+    { role: "엠티 도우미", name: "Member23", duty: "9조 귀가 인원 관리" },
+    { role: "엠티 도우미", name: "Member17", duty: "10조 귀가 인원 관리" },
+    { role: "엠티 도우미", name: "Member06", duty: "11조 귀가 인원 관리" },
+    { role: "엠티 도우미", name: "Member40", duty: "12조 귀가 인원 관리" },
+    { role: "엠티 도우미", name: "Member11", duty: "13조 귀가 인원 관리" },
+    { role: "엠티 도우미", name: "Member25", duty: "15조 귀가 인원 관리" },
+    { role: "엠티 도우미", name: "Member10", duty: "14조 귀가 인원 관리" }
+  ]},
+  { time: "11:00", event: "귀가 완료 및 최종 확인", duties: [] }
+];
+
+const nameList = [
+  "Member37","Member04","Member27","Member20","Member24","Member05","Member18","Member35","Member03",
+  "Member36","Member32","Member21","Member28","Member41","Member39","Member07","Member12","Member16",
+  "Member29","Member43","Member01","Member02","Member31","Member33","Member34","Member08","Member10",
+  "Member38","Member26","Member42","Member30","엠티 도우미",
+  "Member22","Member13","Member15","Member09","Member44","Member14","Member19","Member23","Member17","Member06","Member40","Member11","Member25"
+];
+
+/* ─── Role badge class ─── */
+function getRoleBadgeClass(role) {
+  if (role.includes('학생회장') || role.includes('부학생회장')) return 'role-president';
+  if (role.includes('국장')) return 'role-director';
+  if (role.includes('기획국')) return 'role-dept-planning';
+  if (role.includes('교육국')) return 'role-dept-edu';
+  if (role.includes('방송국')) return 'role-dept-broadcast';
+  if (role.includes('집행국')) return 'role-dept-exec';
+  if (role.includes('홍보국')) return 'role-dept-pr';
+  if (role.includes('과대')) return 'role-rep';
+  return 'role-helper';
+}
+
+
+/* ─── Render timeline ─── */
+function renderTimeline(containerId, data, dayStr) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  const now = getNow();
+  const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const showNow = today === dayStr;
+  const isPastDay = dayStr < today;
+  const nowMinutes = showNow ? now.getHours() * 60 + now.getMinutes() : -1;
+  let nowInserted = false;
+
+  data.forEach((block, idx) => {
+    let [h, m] = block.time.split(':').map(Number);
+    let blockMinutes = h * 60 + m;
+    if (dayStr === '2026-05-08' && h < 6) blockMinutes += 1440;
+
+    let nextMinutes = Infinity;
+    if (idx + 1 < data.length) {
+      let [nh, nm] = data[idx+1].time.split(':').map(Number);
+      nextMinutes = nh * 60 + nm;
+      if (dayStr === '2026-05-08' && nh < 6) nextMinutes += 1440;
+    }
+
+    /* state: past / current / future */
+    let state = 'future';
+    if (isPastDay) state = 'past';
+    else if (showNow) {
+      if (nowMinutes >= nextMinutes) state = 'past';
+      else if (nowMinutes >= blockMinutes) state = 'current';
+    }
+
+    if (showNow && !nowInserted && nowMinutes >= blockMinutes && nowMinutes < nextMinutes) {
+      const nowEl = document.createElement('div');
+      nowEl.className = 'event-block';
+      nowEl.style.cssText = 'margin-bottom:0;pointer-events:none;';
+      nowEl.innerHTML = `
+        <div class="event-time"></div>
+        <div class="event-dot" style="padding-top:7px;">
+          <div style="width:9px;height:9px;border-radius:50%;background:#C94030;box-shadow:0 0 8px #C94030;animation:nowPulse 1.5s infinite;"></div>
+        </div>
+        <div style="flex:1;display:flex;align-items:center;">
+          <div class="now-line"></div>
+          <div class="now-label">지금</div>
+        </div>`;
+      container.appendChild(nowEl);
+      nowInserted = true;
+    }
+
+    const blockEl = document.createElement('div');
+    blockEl.className = 'event-block' + (block.night ? ' night-event' : '') + ' ' + state;
+
+    let dutiesHtml = '';
+    if (block.duties.length === 0) {
+      dutiesHtml = '<span class="no-duties">개인 자유 시간</span>';
+    } else {
+      const cards = block.duties.map(d => {
+        const mine = (d.name === loggedInUser) ? ' is-mine' : '';
+        return `
+        <div class="duty-card${mine}" data-name="${d.name}">
+          <div class="duty-top">
+            <span class="role-badge ${getRoleBadgeClass(d.role)}">${d.role}</span>
+            <span class="duty-name">${d.name}</span>
+          </div>
+          <div class="duty-desc">${d.duty}</div>
+        </div>`;
+      }).join('');
+      dutiesHtml = `<div class="duty-grid">${cards}</div>`;
+    }
+
+    blockEl.innerHTML = `
+      <div class="event-time"><span class="time-stamp">${block.time}</span></div>
+      <div class="event-dot"><div class="seal-dot"></div></div>
+      <div class="event-content">
+        <div class="event-name">${block.event}</div>
+        ${dutiesHtml}
+      </div>`;
+    container.appendChild(blockEl);
+  });
+}
+
+/* debugNow must be defined before renderTimeline calls (getNow references it) */
+const SIM_KEY = 'mt2026_sim';
+let debugNow = null;
+let simMode  = false;
+let loggedInUser = null;
+(function restoreSim() {
+  try {
+    const s = JSON.parse(localStorage.getItem(SIM_KEY));
+    if (s?.on) { simMode = true; debugNow = s.t || null; }
+  } catch(e) {}
+})();
+function getNow() { return (simMode && debugNow) ? new Date(debugNow) : new Date(); }
+function saveSim() { localStorage.setItem(SIM_KEY, JSON.stringify({on: simMode, t: debugNow})); }
+
+/* Load localStorage cache as initial fallback (API will overwrite on first fetch) */
+(function loadLocalFallback() {
+  try {
+    const s = localStorage.getItem('mt2026_data');
+    if (!s) return;
+    const {day1: d1, day2: d2} = JSON.parse(s);
+    if (d1?.length) day1.splice(0, day1.length, ...d1);
+    if (d2?.length) day2.splice(0, day2.length, ...d2);
+  } catch(e) {}
+  try {
+    const pw = JSON.parse(localStorage.getItem('mt2026_pw') || '{}');
+    Object.assign(_pwCache, pw);
+  } catch(e) {}
+})();
+
+renderTimeline('timeline-1', day1, '2026-05-08');
+renderTimeline('timeline-2', day2, '2026-05-09');
+
+/* ─── Tab switching ─── */
+document.querySelectorAll('.day-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.day-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+    document.querySelectorAll('.day-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    tab.setAttribute('aria-selected','true');
+    document.getElementById('panel-' + tab.dataset.day).classList.add('active');
+  });
+});
+
+/* ─── View mode: my-only (default) vs all ─── */
+let showAllMode = false;
+
+function applyViewMode() {
+  document.querySelectorAll('.event-block').forEach(block => {
+    const ec = block.querySelector('.event-content');
+    if (!ec) return;
+    const dutyGrid = block.querySelector('.duty-grid');
+    block.querySelectorAll('.my-only-msg').forEach(m => m.remove());
+
+    if (showAllMode) {
+      if (dutyGrid) {
+        dutyGrid.style.display = '';
+        dutyGrid.querySelectorAll('.duty-card').forEach(c => c.style.display = '');
+      }
+    } else {
+      if (dutyGrid) {
+        const cards = [...dutyGrid.querySelectorAll('.duty-card')];
+        const myCard = cards.find(c => c.dataset.name === loggedInUser);
+        if (myCard) {
+          dutyGrid.style.display = '';
+          cards.forEach(c => { c.style.display = c === myCard ? '' : 'none'; });
+        } else {
+          dutyGrid.style.display = 'none';
+          const msg = document.createElement('span');
+          msg.className = 'my-only-msg no-duties';
+          msg.textContent = '담당 업무 없음';
+          ec.appendChild(msg);
+        }
+      }
+    }
+  });
+}
+
+const showAllToggle = document.getElementById('showAllToggle');
+showAllToggle.addEventListener('change', () => {
+  if (!ADMIN_SET.has(loggedInUser)) { showAllToggle.checked = false; return; }
+  showAllMode = showAllToggle.checked;
+  applyViewMode();
+});
+
+/* ─── Timetable panel ─── */
+const ttPanel = document.getElementById('ttPanel');
+const ttBody  = ttPanel.querySelector('.tt-body');
+
+function autoSwitchDay() {
+  const now = getNow();
+  const ds = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  if (ds === '2026-05-09') document.querySelector('[data-day="2"]').click();
+}
+
+document.getElementById('openTTBtn').addEventListener('click', () => {
+  const isAdmin = ADMIN_SET.has(loggedInUser);
+  document.querySelector('.tt-filter').style.display = isAdmin ? '' : 'none';
+  showAllMode = false;
+  showAllToggle.checked = false;
+
+  ttPanel.classList.add('open');
+  applyViewMode();
+  autoSwitchDay();
+  setTimeout(() => {
+    const nowLine = ttPanel.querySelector('.now-line');
+    if (nowLine) nowLine.closest('.event-block')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 420);
+});
+
+document.getElementById('closeTTBtn').addEventListener('click', () => {
+  ttPanel.classList.remove('open');
+});
+
+/* ═══════════════════════════════════════════
+   LOGIN / SESSION
+   ═══════════════════════════════════════════ */
+const STORAGE_KEY  = 'mt2026_user';
+const PW_KEY       = 'mt2026_pw';
+
+/* ─── 소속 매핑 ─── */
+const userDept = {
+  "Member37":"4학년 과대",   "Member04":"부학생회장",  "Member27":"기획국장",
+  "Member20":"기획국원",       "Member24":"기획국원",     "Member05":"기획국원",
+  "Member18":"방송국장",     "Member35":"교육국원",     "Member03":"2조 MT도우미",
+  "Member36":"학생회장",     "Member32":"교육국장",     "Member21":"교육국원",
+  "Member28":"교육국원",     "Member41":"교육국원",     "Member39":"기획국원",
+  "Member07":"방송국원",     "Member12":"방송국원",     "Member16":"방송국원",
+  "Member29":"방송국원",     "Member43":"집행국장",     "Member01":"집행국원",
+  "Member02":"집행국원",     "Member31":"집행국원",       "Member33":"집행국원",
+  "Member34":"홍보국장",     "Member08":"홍보국원",
+  "Member10":"홍보국원 · 14조 MT도우미",
+  "Member38":"홍보국원",     "Member26":"2학년 과대",  "Member42":"1학년 과대",
+  "Member30":"3학년 과대",   "엠티 도우미":"MT도우미",
+  "Member22":"1조 MT도우미", "Member13":"3조 MT도우미", "Member15":"4조 MT도우미",
+  "Member09":"5조 MT도우미", "Member44":"6조 MT도우미", "Member14":"7조 MT도우미",
+  "Member19":"8조 MT도우미", "Member23":"9조 MT도우미", "Member17":"10조 MT도우미",
+  "Member06":"11조 MT도우미","Member40":"12조 MT도우미","Member11":"13조 MT도우미",
+  "Member25":"15조 MT도우미",
+};
+
+const DEFAULT_PW = 'abc123!';
+
+function getPassword(name) {
+  if (_pwCache[name] !== undefined) return _pwCache[name];
+  const local = JSON.parse(localStorage.getItem(PW_KEY) || '{}');
+  return local[name] !== undefined ? local[name] : DEFAULT_PW;
+}
+function setPassword(name, pw) {
+  _pwCache[name] = pw;
+  const local = JSON.parse(localStorage.getItem(PW_KEY) || '{}');
+  local[name] = pw;
+  localStorage.setItem(PW_KEY, JSON.stringify(local));
+  pushState('passwords', _pwCache);
+}
+
+const loginOverlay  = document.getElementById('loginOverlay');
+const loginSelectEl = document.getElementById('loginSelect');
+const loginPwEl     = document.getElementById('loginPw');
+const loginBtn      = document.getElementById('loginBtn');
+const loginErr      = document.getElementById('loginErr');
+const topBar        = document.getElementById('topBar');
+const topBarUser    = document.getElementById('topBarUser');
+const logoutBtn     = document.getElementById('logoutBtn');
+const dashboardEl   = document.getElementById('dashboard');
+
+
+/* ─── Time helpers ─── */
+function toMins(timeStr, dayStr) {
+  const [h, m] = timeStr.split(':').map(Number);
+  let mins = h * 60 + m;
+  if (dayStr === '2026-05-08' && h < 6) mins += 1440;
+  return mins;
+}
+
+function getBlockEndTime(block) {
+  const idx1 = day1.indexOf(block);
+  if (idx1 !== -1) {
+    if (idx1 + 1 < day1.length) return day1[idx1 + 1].time;
+    return day2.length ? day2[0].time : null;
+  }
+  const idx2 = day2.indexOf(block);
+  if (idx2 !== -1) return idx2 + 1 < day2.length ? day2[idx2 + 1].time : null;
+  return null;
+}
+
+function getCurrentBlock() {
+  const now = getNow();
+  const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  let data, dayStr;
+  if      (today === '2026-05-08') { data = day1; dayStr = today; }
+  else if (today === '2026-05-09') { data = day2; dayStr = today; }
+  else return null;
+
+  let nowMins = now.getHours() * 60 + now.getMinutes();
+  if (dayStr === '2026-05-08' && now.getHours() < 6) nowMins += 1440;
+
+  for (let i = 0; i < data.length; i++) {
+    const bMins = toMins(data[i].time, dayStr);
+    const nMins = i + 1 < data.length ? toMins(data[i+1].time, dayStr) : Infinity;
+    if (nowMins >= bMins && nowMins < nMins) return data[i];
+    if (i === data.length - 1 && nowMins >= bMins) return data[i];
+  }
+  return null;
+}
+
+function getNextDutyBlock(name) {
+  const now = getNow();
+  const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  if (today !== '2026-05-08' && today !== '2026-05-09') return null;
+
+  let nowMins = now.getHours() * 60 + now.getMinutes();
+  if (today === '2026-05-08' && now.getHours() < 6) nowMins += 1440;
+
+  const sequence = today === '2026-05-08'
+    ? [...day1.map(b => ({b, ds:'2026-05-08'})), ...day2.map(b => ({b, ds:'2026-05-09'}))]
+    : day2.map(b => ({b, ds:'2026-05-09'}));
+
+  let passedCurrent = false;
+  for (const {b, ds} of sequence) {
+    const bMins = toMins(b.time, ds);
+    if (!passedCurrent) {
+      // still before or at current block — skip until we've passed current
+      if (ds === today && nowMins < bMins) passedCurrent = true; // upcoming, but not yet
+      else if (ds === today && nowMins >= bMins) { passedCurrent = false; continue; } // already past
+      else if (ds !== today) passedCurrent = true; // future day
+    }
+    if (passedCurrent && b.duties.find(d => d.name === name)) return b;
+  }
+  return null;
+}
+
+/* ─── Format minutes as "X시간 Y분" ─── */
+function fmtMinsKo(mins) {
+  if (mins < 1) return '곧';
+  if (mins < 60) return mins + '분';
+  const h = Math.floor(mins / 60), m = mins % 60;
+  return m === 0 ? h + '시간' : h + '시간 ' + m + '분';
+}
+
+/* ─── Done state for current duty (per user, per block) ─── */
+const DONE_KEY = 'mt2026_done';
+function getDoneSet() {
+  try { return new Set(JSON.parse(localStorage.getItem(DONE_KEY) || '[]')); }
+  catch(e) { return new Set(); }
+}
+function saveDoneSet(set) {
+  localStorage.setItem(DONE_KEY, JSON.stringify([...set]));
+}
+function doneKeyFor(name, block) {
+  return name + '|' + block.time + '|' + block.event;
+}
+
+/* ─── Update day progress strip ─── */
+function updateDayProgress() {
+  const sec = document.getElementById('dayProgress');
+  const now = getNow();
+  const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  let data, dayStr, label;
+  if (today === '2026-05-08') { data = day1; dayStr = today; label = '1일차'; }
+  else if (today === '2026-05-09') { data = day2; dayStr = today; label = '2일차'; }
+  else { sec.classList.add('hidden'); return; }
+  sec.classList.remove('hidden');
+  let nowMins = now.getHours() * 60 + now.getMinutes();
+  if (dayStr === '2026-05-08' && now.getHours() < 6) nowMins += 1440;
+  let passed = 0;
+  for (let i = 0; i < data.length; i++) {
+    const bMins = toMins(data[i].time, dayStr);
+    if (nowMins >= bMins) passed = i + 1;
+  }
+  document.getElementById('dpLabel').textContent = label;
+  document.getElementById('dpCount').textContent = passed + '/' + data.length;
+  document.getElementById('dpFill').style.width = (data.length ? Math.round(passed / data.length * 100) : 0) + '%';
+}
+
+/* ─── Update dashboard cards ─── */
+function updateDashboard() {
+  if (!loggedInUser) return;
+  const now = getNow();
+  const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+
+  const curBlock  = getCurrentBlock();
+  const nextBlock = getNextDutyBlock(loggedInUser);
+  const cdEl   = document.getElementById('curCountdown');
+  const cdFill = document.getElementById('curCdFill');
+  const cdText = document.getElementById('curCdText');
+  const doneBtn = document.getElementById('curDoneBtn');
+
+  /* Current card */
+  if (!curBlock) {
+    const before = today < '2026-05-08';
+    document.getElementById('curTime').textContent  = before ? 'D-DAY' : '—';
+    document.getElementById('curEvent').textContent = before ? '2026.05.08 (금) MT 시작' : 'MT가 종료되었습니다';
+    const taskEl = document.getElementById('curTask');
+    taskEl.textContent = before ? '모두 고생 많으셨습니다. 잠시 후 함께해요!' : '수고 많으셨습니다!';
+    taskEl.className = 'bc-task muted';
+    cdEl.style.display = 'none';
+    doneBtn.classList.add('hidden');
+  } else {
+    const curEnd = getBlockEndTime(curBlock);
+    document.getElementById('curTime').textContent  = curBlock.time + (curEnd ? ` ~ ${curEnd}` : '');
+    document.getElementById('curEvent').textContent = curBlock.event;
+    const myDuty = curBlock.duties.find(d => d.name === loggedInUser);
+    const taskEl = document.getElementById('curTask');
+    if (myDuty) {
+      taskEl.textContent = myDuty.duty;
+      taskEl.className = 'bc-task';
+    } else {
+      taskEl.textContent = '이번 일정 지정 업무 없음';
+      taskEl.className = 'bc-task muted';
+    }
+
+    /* countdown bar */
+    const dayStr = (today === '2026-05-09') ? '2026-05-09' : '2026-05-08';
+    const startM = toMins(curBlock.time, dayStr);
+    const endM   = curEnd ? toMins(curEnd, dayStr) : startM + 60;
+    let nowM = now.getHours() * 60 + now.getMinutes();
+    if (dayStr === '2026-05-08' && now.getHours() < 6) nowM += 1440;
+    const total = Math.max(1, endM - startM);
+    const elapsed = Math.max(0, Math.min(total, nowM - startM));
+    const remaining = Math.max(0, endM - nowM);
+    cdEl.style.display = '';
+    cdFill.style.width = Math.round(elapsed / total * 100) + '%';
+    cdText.textContent = '남은 시간 ' + fmtMinsKo(remaining);
+
+    /* done button (only if I have a duty this block) */
+    if (myDuty) {
+      doneBtn.classList.remove('hidden');
+      const k = doneKeyFor(loggedInUser, curBlock);
+      const doneSet = getDoneSet();
+      const isDone = doneSet.has(k);
+      doneBtn.classList.toggle('checked', isDone);
+      document.getElementById('curDoneCheck').textContent = isDone ? '✓' : '';
+      document.getElementById('curDoneText').textContent = isDone ? '완료됨' : '완료 표시';
+      doneBtn.onclick = () => {
+        const s = getDoneSet();
+        if (s.has(k)) s.delete(k); else s.add(k);
+        saveDoneSet(s);
+        updateDashboard();
+      };
+    } else {
+      doneBtn.classList.add('hidden');
+    }
+  }
+
+  /* Next card */
+  if (nextBlock) {
+    const nextEnd = getBlockEndTime(nextBlock);
+    document.getElementById('nextTime').textContent  = nextBlock.time + (nextEnd ? ` ~ ${nextEnd}` : '');
+    document.getElementById('nextEvent').textContent = nextBlock.event;
+    const myDuty = nextBlock.duties.find(d => d.name === loggedInUser);
+    const taskEl = document.getElementById('nextTask');
+    taskEl.textContent = myDuty ? myDuty.duty : '—';
+    taskEl.className = 'bc-task';
+
+    /* "in X" until next */
+    const nbDay = day1.indexOf(nextBlock) !== -1 ? '2026-05-08' : '2026-05-09';
+    const nbStart = toMins(nextBlock.time, nbDay);
+    let nowM = now.getHours() * 60 + now.getMinutes();
+    const nowDay = today;
+    if (nowDay === '2026-05-08' && now.getHours() < 6) nowM += 1440;
+    let until;
+    if (nbDay === nowDay) until = nbStart - nowM;
+    else if (nowDay === '2026-05-08' && nbDay === '2026-05-09') until = (nbStart + 1440) - nowM;
+    else until = null;
+    document.getElementById('nextUntil').textContent =
+      (until !== null && until > 0) ? '◷ ' + fmtMinsKo(until) + ' 후 시작' : '';
+  } else {
+    document.getElementById('nextTime').textContent  = '';
+    document.getElementById('nextEvent').textContent = '';
+    const taskEl = document.getElementById('nextTask');
+    taskEl.textContent = '더 이상 예정된 업무가 없습니다';
+    taskEl.className = 'bc-task muted';
+    document.getElementById('nextUntil').textContent = '';
+  }
+
+  updateDayProgress();
+}
+
+/* ─── Login ─── */
+const 선발대Set = new Set(["Member37","Member04","Member27","Member20","Member24","Member05","Member18","Member35","Member03"]);
+
+function doLogin(name) {
+  loggedInUser = name;
+  localStorage.setItem(STORAGE_KEY, name);
+
+  loginOverlay.classList.add('hidden');
+  topBar.classList.remove('hidden');
+
+  document.getElementById('tbuDept').textContent = userDept[name] || '';
+  document.getElementById('tbuName').textContent = name;
+  const badge = document.getElementById('tbuBadge');
+  const group = 선발대Set.has(name) ? '선발대' : '후발대';
+  badge.textContent = group;
+  badge.className = 'tbu-badge ' + group;
+
+  dashboardEl.classList.remove('hidden');
+  document.getElementById('adminBtn').style.display = ADMIN_SET.has(name) ? 'inline-block' : 'none';
+  updateTodoSection();
+  updateNoticeSection();
+  simRefresh();
+}
+
+/* ─── Logout ─── */
+function doLogout() {
+  loggedInUser = null;
+  localStorage.removeItem(STORAGE_KEY);
+
+  ttPanel.classList.remove('open');
+  if (typeof adminPanel !== 'undefined') adminPanel.classList.remove('open');
+  dashboardEl.classList.add('hidden');
+  topBar.classList.add('hidden');
+  document.getElementById('todoSection').classList.add('hidden');
+  document.getElementById('adminBtn').style.display = 'none';
+  loginOverlay.classList.remove('hidden');
+}
+
+loginBtn.addEventListener('click', () => {
+  const name = loginSelectEl.value.trim();
+  const pw   = loginPwEl.value;
+  if (!name) { loginErr.textContent = '이름을 입력해 주세요.'; return; }
+  if (!nameList.includes(name)) { loginErr.textContent = '등록되지 않은 이름입니다.'; return; }
+  if (!pw)   { loginErr.textContent = '비밀번호를 입력해 주세요.'; return; }
+  if (!_apiReady) {
+    /* API 미연결 시 localStorage 캐시로 폴백 */
+    const local = JSON.parse(localStorage.getItem('mt2026_pw') || '{}');
+    const fallbackPw = local[name] !== undefined ? local[name] : DEFAULT_PW;
+    if (pw !== fallbackPw) { loginErr.textContent = '비밀번호가 맞지 않습니다.'; return; }
+  } else {
+    if (pw !== getPassword(name)) { loginErr.textContent = '비밀번호가 맞지 않습니다.'; return; }
+  }
+  loginErr.textContent = '';
+  loginPwEl.value = '';
+  doLogin(name);
+});
+
+/* Enter key triggers login from either field */
+loginSelectEl.addEventListener('keydown', e => { if (e.key === 'Enter') loginPwEl.focus(); });
+loginPwEl.addEventListener('keydown', e => { if (e.key === 'Enter') loginBtn.click(); });
+
+logoutBtn.addEventListener('click', doLogout);
+
+/* ─── Password change modal ─── */
+const pwModal      = document.getElementById('pwModal');
+const pwModalUser  = document.getElementById('pwModalUser');
+const pwCurrentEl  = document.getElementById('pwCurrent');
+const pwNewEl      = document.getElementById('pwNew');
+const pwConfirmEl  = document.getElementById('pwConfirm');
+const pwSaveBtn    = document.getElementById('pwSaveBtn');
+const pwCancelBtn  = document.getElementById('pwCancelBtn');
+const pwMsgEl      = document.getElementById('pwMsg');
+
+document.getElementById('changePwBtn').addEventListener('click', () => {
+  pwModalUser.textContent = loggedInUser + ' 님의 비밀번호를 변경합니다';
+  pwCurrentEl.value = ''; pwNewEl.value = ''; pwConfirmEl.value = '';
+  pwMsgEl.className = ''; pwMsgEl.textContent = '';
+  pwModal.classList.add('open');
+});
+
+pwCancelBtn.addEventListener('click', () => pwModal.classList.remove('open'));
+
+pwSaveBtn.addEventListener('click', () => {
+  const cur  = pwCurrentEl.value;
+  const nw   = pwNewEl.value;
+  const conf = pwConfirmEl.value;
+  pwMsgEl.className = 'login-err';
+
+  if (!cur)                          { pwMsgEl.textContent = '현재 비밀번호를 입력해 주세요.'; return; }
+  if (cur !== getPassword(loggedInUser)) { pwMsgEl.textContent = '현재 비밀번호가 맞지 않습니다.'; return; }
+  if (!nw)                           { pwMsgEl.textContent = '새 비밀번호를 입력해 주세요.'; return; }
+  if (nw !== conf)                   { pwMsgEl.textContent = '새 비밀번호가 일치하지 않습니다.'; return; }
+
+  setPassword(loggedInUser, nw);
+  pwMsgEl.className = 'login-ok';
+  pwMsgEl.textContent = '비밀번호가 변경되었습니다.';
+  setTimeout(() => pwModal.classList.remove('open'), 1200);
+});
+
+/* Real-time: refresh dashboard every 30 s for countdown */
+setInterval(() => {
+  if (!loggedInUser) return;
+  updateDashboard();
+}, 30000);
+/* Render timeline less often */
+setInterval(() => {
+  if (!loggedInUser) return;
+  renderTimeline('timeline-1', day1, '2026-05-08');
+  renderTimeline('timeline-2', day2, '2026-05-09');
+  if (ttPanel.classList.contains('open')) applyViewMode();
+}, 60000);
+
+/* ─── Detail sheet (current task guide) ─── */
+/* Guide registry: keyed by event name. To be populated by user. */
+const TASK_GUIDES = {
+  // "선발대 집합 및 행사장 세팅": {
+  //   summary: "...",
+  //   steps: ["...", "..."],
+  //   notes: "..."
+  // },
+};
+
+const detailSheet = document.getElementById('detailSheet');
+const detailTitleEl = document.getElementById('detailTitle');
+const detailTimeEl = document.getElementById('detailTime');
+const detailBodyEl = document.getElementById('detailBody');
+const currentCardEl = document.getElementById('currentCard');
+
+function escH2(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function openDetailSheet() {
+  const block = getCurrentBlock();
+  if (!block) return;
+
+  const curEnd = getBlockEndTime(block);
+  detailTitleEl.textContent = block.event;
+  detailTimeEl.textContent = block.time + (curEnd ? ` ~ ${curEnd}` : '');
+
+  const myDuty = block.duties.find(d => d.name === loggedInUser);
+  const guide = TASK_GUIDES[block.event];
+
+  let html = '';
+
+  /* My duty highlight (if any) */
+  if (myDuty) {
+    html += `
+      <div class="detail-myduty">
+        <div class="detail-myduty-role">${escH2(myDuty.role)}</div>
+        <div class="detail-myduty-text">${escH2(myDuty.duty)}</div>
+      </div>`;
+  }
+
+  /* Guide section */
+  html += `<div class="detail-section">
+    <div class="detail-section-hd">상세 가이드</div>`;
+  if (guide && (guide.summary || guide.steps?.length || guide.notes)) {
+    if (guide.summary) {
+      html += `<div class="detail-guide" style="margin-bottom:12px;">${escH2(guide.summary)}</div>`;
+    }
+    if (guide.steps?.length) {
+      html += `<ol class="detail-step-list">${
+        guide.steps.map((s, i) => `
+          <li class="detail-step">
+            <span class="detail-step-num">${i+1}</span>
+            <span class="detail-step-text">${escH2(s)}</span>
+          </li>`).join('')
+      }</ol>`;
+    }
+    if (guide.notes) {
+      html += `<div class="detail-guide" style="margin-top:12px;background:rgba(160,41,28,0.06);border:1px solid rgba(160,41,28,0.18);border-radius:10px;padding:12px;">⚠ ${escH2(guide.notes)}</div>`;
+    }
+  } else {
+    html += `<div class="detail-guide empty">상세 가이드가 곧 등록됩니다</div>`;
+  }
+  html += `</div>`;
+
+  /* All people in this block */
+  if (block.duties.length > 0) {
+    html += `<div class="detail-section">
+      <div class="detail-section-hd">함께하는 스텝 (${block.duties.length}명)</div>
+      <div class="detail-people-grid">${
+        block.duties.map(d => `
+          <div class="detail-people-item">
+            <span class="detail-people-name">${escH2(d.name)}</span>
+            <span class="detail-people-role">${escH2(d.role)}</span>
+          </div>`).join('')
+      }</div>
+    </div>`;
+  }
+
+  detailBodyEl.innerHTML = html;
+  detailSheet.classList.add('open');
+}
+
+currentCardEl.addEventListener('click', () => {
+  const block = getCurrentBlock();
+  if (!block) return; // before MT or after — no detail
+  openDetailSheet();
+});
+
+document.getElementById('detailClose').addEventListener('click', () => {
+  detailSheet.classList.remove('open');
+});
+detailSheet.addEventListener('click', e => {
+  if (e.target === detailSheet) detailSheet.classList.remove('open');
+});
+
+/* Disable tap when no current block */
+function syncCurrentCardTappable() {
+  const block = getCurrentBlock();
+  currentCardEl.classList.toggle('no-tap', !block);
+}
+/* Hook into existing dashboard update */
+const _origUpdateDashboard_for_detail = updateDashboard;
+updateDashboard = function() {
+  _origUpdateDashboard_for_detail.apply(this, arguments);
+  syncCurrentCardTappable();
+};
+
+/* ─── Top bar overflow menu ─── */
+const menuBtn = document.getElementById('menuBtn');
+const topBarMenu = document.getElementById('topBarMenu');
+menuBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  topBarMenu.classList.toggle('open');
+});
+document.addEventListener('click', e => {
+  if (!menuBtn.contains(e.target) && !topBarMenu.contains(e.target)) {
+    topBarMenu.classList.remove('open');
+  }
+});
+
+/* ─── Notice sheet ─── */
+const noticeSheet = document.getElementById('noticeSheet');
+document.getElementById('noticeBellBtn').addEventListener('click', () => {
+  noticeSheet.classList.add('open');
+  const items = getNotices();
+  localStorage.setItem('mt2026_notice_seen', String(items.length));
+  document.getElementById('noticeBellBtn').classList.remove('has-unread');
+});
+document.getElementById('noticeSheetClose').addEventListener('click', () => {
+  noticeSheet.classList.remove('open');
+});
+noticeSheet.addEventListener('click', e => {
+  if (e.target === noticeSheet) noticeSheet.classList.remove('open');
+});
+
+/* ─── Populate name datalist for login autocomplete ─── */
+(function fillDataList() {
+  const dl = document.getElementById('nameDataList');
+  if (!dl) return;
+  dl.innerHTML = nameList.filter(n => n !== '엠티 도우미').map(n => `<option value="${n}">`).join('');
+})();
+
+/* ═══════════════════════════════════════════
+   ADMIN FEATURE
+   ═══════════════════════════════════════════ */
+const ADMIN_SET  = new Set(["Member05", "Member04", "Member27"]);
+const DATA_KEY   = 'mt2026_data';
+const TODO_KEY   = 'mt2026_todo';
+const NOTICE_KEY = 'mt2026_notice';
+
+/* ─ Time simulation (admin test) ─ */
+function simRefresh() {
+  updateDashboard();
+  renderTimeline('timeline-1', day1, '2026-05-08');
+  renderTimeline('timeline-2', day2, '2026-05-09');
+  if (ttPanel.classList.contains('open')) applyViewMode();
+}
+function toggleSimMode(on) {
+  simMode = on;
+  const inp = document.getElementById('simTimeInp');
+  if (inp) inp.disabled = !on;
+  if (!on) { debugNow = null; }
+  saveSim();
+  pushState('sim', {on: simMode, t: debugNow});
+  simRefresh();
+}
+function setSimTime() {
+  const v = document.getElementById('simTimeInp')?.value;
+  debugNow = v || null;
+  saveSim();
+  pushState('sim', {on: simMode, t: debugNow});
+  simRefresh();
+}
+let _adminDay    = 1;
+let _adminPerson = null;
+let _adminTab    = 'tt';
+const _expanded  = new Set();
+
+/* ─ Schedule persistence ─ */
+function saveScheduleData() {
+  localStorage.setItem(DATA_KEY, JSON.stringify({day1, day2}));
+  pushState('schedule', {day1, day2});
+}
+
+/* ─ Todos: derived from schedule duties (업무 = 할일) ─ */
+function getTodos(name) {
+  const out = [];
+  [day1, day2].forEach((blocks, dayIdx) => {
+    blocks.forEach(b => {
+      (b.duties || []).forEach(d => {
+        if (d.name === name) {
+          const text = (d.duty && d.duty.trim()) || b.event;
+          out.push(`[${dayIdx+1}일차 ${b.time}] ${text}`);
+        }
+      });
+    });
+  });
+  return out;
+}
+/* No-op: kept for backwards compatibility — todos are derived from schedule */
+function saveTodos(name, items) { /* no-op */ }
+
+/* ─── Todo done state ─── */
+const TODO_DONE_KEY = 'mt2026_todo_done';
+function getTodoDone() {
+  try { return JSON.parse(localStorage.getItem(TODO_DONE_KEY) || '{}'); }
+  catch(e) { return {}; }
+}
+function setTodoDone(name, idx, done) {
+  const all = getTodoDone();
+  const k = name + '|' + idx;
+  if (done) all[k] = 1; else delete all[k];
+  localStorage.setItem(TODO_DONE_KEY, JSON.stringify(all));
+}
+function isTodoDone(name, idx) {
+  return !!getTodoDone()[name + '|' + idx];
+}
+
+/* ─ Dashboard todo section ─ */
+function updateTodoSection() {
+  const sec  = document.getElementById('todoSection');
+  const list = document.getElementById('todoList');
+  const items = getTodos(loggedInUser);
+  sec.classList.toggle('hidden', !items.length);
+  list.innerHTML = items.map((t, i) => {
+    const done = isTodoDone(loggedInUser, i);
+    return `<div class="todo-item${done?' done':''}" data-idx="${i}">
+      <span class="todo-check">✓</span>
+      <span class="todo-text">${escH(t)}</span>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.todo-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const idx = parseInt(el.dataset.idx, 10);
+      const cur = isTodoDone(loggedInUser, idx);
+      setTodoDone(loggedInUser, idx, !cur);
+      updateTodoSection();
+    });
+  });
+}
+
+/* ─ HTML escape helper ─ */
+function escH(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ─ Admin panel elements ─ */
+const adminPanel = document.getElementById('adminPanel');
+const adminBodyEl = document.getElementById('adminBody');
+const adminBtnEl  = document.getElementById('adminBtn');
+
+adminBtnEl.addEventListener('click', () => {
+  if (!ADMIN_SET.has(loggedInUser)) return;
+  _adminTab = 'tt';
+  adminPanel.classList.add('open');
+  syncAdminTabs();
+  renderAdminBody();
+});
+document.getElementById('adminClose').addEventListener('click', () => adminPanel.classList.remove('open'));
+
+document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    _adminTab = btn.dataset.tab;
+    syncAdminTabs();
+    renderAdminBody();
+  });
+});
+
+function syncAdminTabs() {
+  document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === _adminTab));
+}
+
+function renderAdminBody() {
+  if (_adminTab === 'tt') renderAdminTT();
+  else if (_adminTab === 'todo') renderAdminTodoMgr();
+  else if (_adminTab === 'notice') renderAdminNotice();
+  else renderAdminSettings();
+}
+
+/* Save toast feedback */
+let _saveToastTimer = null;
+function showSaveToast() {
+  const t = document.getElementById('adminSaveToast');
+  if (!t) return;
+  t.classList.add('show');
+  clearTimeout(_saveToastTimer);
+  _saveToastTimer = setTimeout(() => t.classList.remove('show'), 1200);
+}
+
+/* ─ Timetable editor (v2) ─ */
+function renderAdminTT() {
+  const data = _adminDay === 1 ? day1 : day2;
+  const totalDuties = data.reduce((s, b) => s + (b.duties?.length || 0), 0);
+  const emptyBlocks = data.filter(b => !b.duties?.length).length;
+
+  adminBodyEl.innerHTML = `
+    <div class="admin-stick">
+      <div class="admin-stats">
+        <span><b>${data.length}</b> 시간대</span>
+        <span><b>${totalDuties}</b> 업무</span>
+        ${emptyBlocks > 0 ? `<span class="stat-warn">⚠ <b>${emptyBlocks}</b>개 시간대 담당자 없음</span>` : ''}
+      </div>
+      <div class="admin-day-tabs" style="margin-bottom:0;">
+        <button class="admin-day-tab${_adminDay===1?' active':''}" onclick="setAdminDay(1)">1일차 (5/8)</button>
+        <button class="admin-day-tab${_adminDay===2?' active':''}" onclick="setAdminDay(2)">2일차 (5/9)</button>
+      </div>
+    </div>
+    <div id="adminBlockList"></div>
+    <button class="admin-add-block-btn" onclick="adminAddBlock()">＋ 시간대 추가</button>`;
+  renderAdminBlocks();
+}
+
+function setAdminDay(d) { _adminDay = d; renderAdminTT(); }
+
+function getCurrentBlockIndex(day) {
+  /* Returns the index of the currently-running block on `day`, or -1 if none.
+     "Currently running" = today's date matches the day, and now >= block.time
+     and now < next block.time. */
+  const today = new Date();
+  const targetDay = day === 1 ? 8 : 9;
+  if (today.getFullYear() !== 2026 || today.getMonth() !== 4 /* May */ || today.getDate() !== targetDay) return -1;
+  const data = day === 1 ? day1 : day2;
+  const nowMin = today.getHours() * 60 + today.getMinutes();
+  const toMin = (t) => {
+    const [h, m] = (t || '00:00').split(':').map(Number);
+    return (h || 0) * 60 + (m || 0);
+  };
+  let idx = -1;
+  for (let i = 0; i < data.length; i++) {
+    const tm = toMin(data[i].time);
+    if (nowMin >= tm) idx = i;
+    else break;
+  }
+  return idx;
+}
+
+function renderAdminBlocks() {
+  const data = _adminDay === 1 ? day1 : day2;
+  const c = document.getElementById('adminBlockList');
+  if (!c) return;
+  const nowIdx = getCurrentBlockIndex(_adminDay);
+  const total = data.length;
+  /* Shared datalist for searchable name picker */
+  const datalist = `<datalist id="adminNameOpts">${nameList.map(n=>`<option value="${escH(n)}"></option>`).join('')}</datalist>`;
+  c.innerHTML = datalist + data.map((block, bi) => {
+    const key = `${_adminDay}-${bi}`;
+    const exp = _expanded.has(key);
+    const dCount = block.duties?.length || 0;
+    const noDuties = dCount === 0;
+    const isNow = bi === nowIdx;
+
+    const dutiesHtml = exp ? `
+      <div class="admin-duties">
+        <div class="admin-duty-toolbar">
+          <button class="admin-tool-btn" onclick="adminAddDuty(${bi})">＋ 업무 추가</button>
+          ${bi > 0 ? `<button class="admin-tool-btn" onclick="adminCopyPrevDuties(${bi})">↘ 이전 시간대 명단 복사</button>` : ''}
+        </div>
+        ${block.duties.map((d, di) => {
+          const nameEmpty = !d.name || !nameList.includes(d.name);
+          return `
+          <div class="admin-duty-row">
+            <input class="admin-inp-role-edit" value="${escH(d.role||'')}"
+              placeholder="역할"
+              onchange="adminUpdateDuty(${bi},${di},'role',this.value)">
+            <input class="admin-inp-name-combo${nameEmpty?' empty':''}" value="${escH(d.name||'')}"
+              list="adminNameOpts" placeholder="담당자"
+              onchange="adminUpdateDuty(${bi},${di},'name',this.value)">
+            <input class="admin-inp admin-inp-duty" value="${escH(d.duty||'')}"
+              onchange="adminUpdateDuty(${bi},${di},'duty',this.value)" placeholder="업무 내용">
+            <button class="admin-btn-icon admin-btn-del" onclick="adminDeleteDuty(${bi},${di})" title="삭제">✕</button>
+          </div>`;
+        }).join('')}
+        ${dCount === 0 ? `<div style="font-size:0.72rem;color:rgba(232,154,111,0.6);text-align:center;padding:14px 0;">담당자가 없습니다</div>` : ''}
+      </div>` : '';
+
+    /* Empty CTA when collapsed and no duties — quick add path */
+    const emptyCta = (!exp && noDuties)
+      ? `<button class="admin-empty-cta" onclick="adminAddDuty(${bi}); event.stopPropagation();">＋ 담당자 추가하기</button>`
+      : '';
+
+    return `
+      <div class="admin-block${noDuties?' no-duties':''}${isNow?' now':''}">
+        <div class="admin-block-hd">
+          <input class="admin-inp admin-inp-time" type="time" value="${escH(block.time)}"
+            onchange="adminUpdateBlock(${bi},'time',this.value)">
+          <input class="admin-inp admin-inp-event" value="${escH(block.event)}"
+            onchange="adminUpdateBlock(${bi},'event',this.value)" placeholder="일정 이름">
+          <div class="admin-block-actions">
+            <div class="admin-block-reorder">
+              <button onclick="adminMoveBlock(${bi},-1)" ${bi===0?'disabled':''} title="위로">▲</button>
+              <button onclick="adminMoveBlock(${bi},1)" ${bi===total-1?'disabled':''} title="아래로">▼</button>
+            </div>
+            <button class="admin-btn-icon" onclick="adminDuplicateBlock(${bi})" title="복제">⎘</button>
+            <button class="admin-btn-icon admin-btn-del" onclick="adminDeleteBlock(${bi})" title="삭제">🗑</button>
+          </div>
+          <div class="admin-block-meta">
+            ${isNow ? `<span class="admin-now-pill">지금 진행중</span>` : ''}
+            <span class="admin-duty-count${noDuties?' warn':''}">${noDuties ? '담당자 없음' : `담당자 ${dCount}명`}</span>
+            <label class="admin-night-label">
+              <input type="checkbox"${block.night?' checked':''}
+                onchange="adminUpdateBlock(${bi},'night',this.checked)">야간
+            </label>
+            <button class="admin-block-expand-btn${exp?' open':''}" onclick="toggleAdminBlock(${bi})"><span class="ex-arrow">▾</span>${exp?'접기':'업무 편집'}</button>
+          </div>
+          ${emptyCta}
+        </div>
+        ${dutiesHtml}
+      </div>`;
+  }).join('');
+}
+
+function toggleAdminBlock(bi) {
+  const key = `${_adminDay}-${bi}`;
+  _expanded.has(key) ? _expanded.delete(key) : _expanded.add(key);
+  renderAdminBlocks();
+}
+
+function adminUpdateBlock(bi, field, val) {
+  (_adminDay===1 ? day1 : day2)[bi][field] = val;
+  adminSaveRefresh();
+}
+function adminUpdateDuty(bi, di, field, val) {
+  (_adminDay===1 ? day1 : day2)[bi].duties[di][field] = val;
+  adminSaveRefresh();
+}
+function adminDeleteBlock(bi) {
+  if (!confirm('이 시간대를 삭제하시겠습니까?')) return;
+  (_adminDay===1 ? day1 : day2).splice(bi, 1);
+  adminSaveRefresh();
+  renderAdminTT();
+}
+function adminDuplicateBlock(bi) {
+  const data = _adminDay===1 ? day1 : day2;
+  const orig = data[bi];
+  const copy = JSON.parse(JSON.stringify(orig));
+  data.splice(bi+1, 0, copy);
+  /* shift expanded keys after bi */
+  const newExp = new Set();
+  _expanded.forEach(k => {
+    const [d,i] = k.split('-').map(Number);
+    if (d === _adminDay && i > bi) newExp.add(`${d}-${i+1}`);
+    else newExp.add(k);
+  });
+  _expanded.clear();
+  newExp.forEach(k => _expanded.add(k));
+  _expanded.add(`${_adminDay}-${bi+1}`);
+  adminSaveRefresh();
+  renderAdminTT();
+}
+function adminAddBlock() {
+  const data = _adminDay===1 ? day1 : day2;
+  /* Smart default: last block time + 1h, else 09:00 */
+  let nextTime = '09:00';
+  if (data.length > 0) {
+    const last = data[data.length - 1].time || '09:00';
+    const [h, m] = last.split(':').map(Number);
+    const nh = (h + 1) % 24;
+    nextTime = `${String(nh).padStart(2,'0')}:${String(m||0).padStart(2,'0')}`;
+  }
+  data.push({time: nextTime, event:'새 일정', duties:[], night:false});
+  _expanded.add(`${_adminDay}-${data.length-1}`);
+  adminSaveRefresh();
+  renderAdminTT();
+}
+function adminDeleteDuty(bi, di) {
+  (_adminDay===1 ? day1 : day2)[bi].duties.splice(di, 1);
+  adminSaveRefresh();
+  renderAdminBlocks();
+}
+function adminAddDuty(bi) {
+  (_adminDay===1 ? day1 : day2)[bi].duties.push({role:'', name:'', duty:''});
+  _expanded.add(`${_adminDay}-${bi}`);
+  adminSaveRefresh();
+  renderAdminBlocks();
+}
+function adminMoveBlock(bi, dir) {
+  const data = _adminDay===1 ? day1 : day2;
+  const ni = bi + dir;
+  if (ni < 0 || ni >= data.length) return;
+  const tmp = data[bi]; data[bi] = data[ni]; data[ni] = tmp;
+  /* swap expanded keys for these two indexes */
+  const k1 = `${_adminDay}-${bi}`, k2 = `${_adminDay}-${ni}`;
+  const has1 = _expanded.has(k1), has2 = _expanded.has(k2);
+  _expanded.delete(k1); _expanded.delete(k2);
+  if (has1) _expanded.add(k2);
+  if (has2) _expanded.add(k1);
+  adminSaveRefresh();
+  renderAdminBlocks();
+}
+function adminCopyPrevDuties(bi) {
+  const data = _adminDay===1 ? day1 : day2;
+  if (bi === 0) return;
+  const prev = data[bi-1].duties || [];
+  if (!prev.length) { alert('이전 시간대에 담당자가 없습니다'); return; }
+  if (data[bi].duties.length && !confirm(`현재 ${data[bi].duties.length}명의 담당자를 덮어쓰시겠습니까?`)) return;
+  data[bi].duties = JSON.parse(JSON.stringify(prev));
+  adminSaveRefresh();
+  renderAdminBlocks();
+}
+
+function adminSaveRefresh() {
+  saveScheduleData();
+  renderTimeline('timeline-1', day1, '2026-05-08');
+  renderTimeline('timeline-2', day2, '2026-05-09');
+  if (ttPanel.classList.contains('open')) applyViewMode();
+  updateDashboard();
+  if (loggedInUser) updateTodoSection();
+  showSaveToast();
+}
+
+/* ─ Todo manager (v2) ─ */
+let _todoSearch = '';
+let _todoView = 'person';   /* 'person' | 'block' */
+let _todoBlockFilter = 'all'; /* 'all' | 'missing' — for block view */
+let _expandedBlocks = new Set(); /* keys: "1-0", "2-3" — collapsed time blocks */
+
+function renderAdminTodoMgr() {
+  if (_todoView === 'block') return renderAdminTodoByBlock();
+  renderAdminTodoByPerson();
+}
+
+function renderTodoViewToggle() {
+  return `
+    <div class="admin-view-seg">
+      <button class="${_todoView==='person'?'active':''}" onclick="setTodoView('person')">담당자별</button>
+      <button class="${_todoView==='block'?'active':''}" onclick="setTodoView('block')">시간대별</button>
+    </div>`;
+}
+function setTodoView(v) {
+  _todoView = v;
+  _tbInlineEdit = null;
+  renderAdminTodoMgr();
+}
+
+function renderAdminTodoByPerson() {
+  /* sort: people with todos first, then by nameList order */
+  const sorted = [...nameList].sort((a, b) => {
+    const ta = (getTodos(a)?.length || 0) > 0;
+    const tb = (getTodos(b)?.length || 0) > 0;
+    if (ta !== tb) return tb - ta;
+    return nameList.indexOf(a) - nameList.indexOf(b);
+  });
+  const filtered = _todoSearch
+    ? sorted.filter(n => n.toLowerCase().includes(_todoSearch.toLowerCase()))
+    : sorted;
+
+  const totalPeopleWithTodos = nameList.filter(n => (getTodos(n)?.length || 0) > 0).length;
+  const totalTodos = nameList.reduce((s, n) => s + (getTodos(n)?.length || 0), 0);
+
+  adminBodyEl.innerHTML = `
+    <div class="admin-stick">
+      <div class="admin-stats">
+        <span><b>${totalPeopleWithTodos}</b> / ${nameList.length}명 할일 있음</span>
+        <span>총 <b>${totalTodos}</b>개 할일</span>
+      </div>
+      ${renderTodoViewToggle()}
+      <div class="admin-search-wrap">
+        <span class="admin-search-ico">🔍</span>
+        <input class="admin-search-inp" id="adminTodoSearch" placeholder="이름 검색..." value="${escH(_todoSearch)}">
+      </div>
+    </div>
+    <div class="admin-section-hd">담당자 선택 <span style="color:rgba(245,237,214,0.3);font-weight:400;letter-spacing:0.04em;">${filtered.length}명</span></div>
+    <div class="admin-person-grid" id="adminPersonList">
+      ${filtered.map(n=>{
+        const cnt = getTodos(n)?.length || 0;
+        return `
+        <div class="admin-person-card${n===_adminPerson?' active':''}" data-pname="${escH(n)}">
+          <span class="pc-name">${escH(n)}</span>
+          <span class="pc-meta">${cnt > 0 ? `할일 ${cnt}` : '없음'}</span>
+          ${cnt > 0 ? `<span class="pc-badge">${cnt}</span>` : ''}
+        </div>`;
+      }).join('')}
+      ${filtered.length === 0 ? '<p class="admin-hint" style="grid-column:1/-1;margin-top:14px;">검색 결과 없음</p>' : ''}
+    </div>
+    <div id="adminTodoEditor">
+      ${_adminPerson ? buildTodoEditor() : '<p class="admin-hint">담당자를 선택하세요</p>'}
+    </div>`;
+
+  document.getElementById('adminTodoSearch').addEventListener('input', e => {
+    _todoSearch = e.target.value;
+    renderAdminTodoMgr();
+    const inp = document.getElementById('adminTodoSearch');
+    if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
+  });
+
+  document.getElementById('adminPersonList').addEventListener('click', e => {
+    const card = e.target.closest('.admin-person-card');
+    if (!card) return;
+    _adminPerson = card.dataset.pname;
+    renderAdminTodoMgr();
+  });
+}
+
+function renderAdminTodoByBlock() {
+  /* Build flat list of all blocks with day info */
+  const blocks = [
+    ...day1.map((b, i) => ({ ...b, day: 1, dayIdx: i })),
+    ...day2.map((b, i) => ({ ...b, day: 2, dayIdx: i })),
+  ];
+
+  /* For each block compute who has filled duty text vs empty */
+  const enriched = blocks.map(b => {
+    const people = (b.duties || []).map((d, di) => ({
+      name: d.name, role: d.role,
+      duty: d.duty, di,
+      hasText: !!(d.duty && d.duty.trim()),
+    }));
+    const missing = people.filter(p => !p.hasText).length;
+    return { ...b, people, missing };
+  });
+
+  const filtered = _todoBlockFilter === 'missing'
+    ? enriched.filter(b => b.missing > 0)
+    : enriched;
+
+  /* Stats */
+  const totalMissing = enriched.reduce((s, b) => s + b.missing, 0);
+  const blocksWithMissing = enriched.filter(b => b.missing > 0).length;
+
+  adminBodyEl.innerHTML = `
+    <div class="admin-stick">
+      <div class="admin-stats">
+        <span><b>${enriched.length}</b> 시간대</span>
+        ${blocksWithMissing > 0
+          ? `<span class="stat-warn">⚠ <b>${blocksWithMissing}</b>개 시간대 / <b>${totalMissing}</b>건 업무 미입력</span>`
+          : `<span style="color:rgba(123,197,123,0.85);">✓ 모든 업무 입력됨</span>`}
+      </div>
+      ${renderTodoViewToggle()}
+      <div class="admin-filter-row">
+        <button class="admin-filter-chip${_todoBlockFilter==='all'?' active':''}" onclick="setTodoBlockFilter('all')">전체 (${enriched.length})</button>
+        <button class="admin-filter-chip${_todoBlockFilter==='missing'?' active':''}" onclick="setTodoBlockFilter('missing')">⚠ 미입력 있음 (${blocksWithMissing})</button>
+      </div>
+    </div>
+    ${[1, 2].map(d => {
+      const dayBlocks = filtered.filter(b => b.day === d);
+      if (dayBlocks.length === 0) return '';
+      return `
+        <div class="admin-section-hd">${d}일차 <span style="color:rgba(245,237,214,0.3);font-weight:400;letter-spacing:0.04em;">${dayBlocks.length}개 시간대</span></div>
+        ${dayBlocks.map(b => renderTBBlock(b)).join('')}
+      `;
+    }).join('')}
+    ${filtered.length === 0 ? '<p class="admin-hint">조건에 맞는 시간대가 없습니다</p>' : ''}`;
+}
+
+function adminTBPickPerson(name) {
+  _adminPerson = name;
+  _todoView = 'person';
+  renderAdminTodoMgr();
+}
+
+/* Inline edit state for time-block view: { day, dayIdx, di } | null */
+let _tbInlineEdit = null;
+
+function adminTBOpenInline(day, dayIdx, di, ev) {
+  if (ev) ev.stopPropagation();
+  _tbInlineEdit = { day, dayIdx, di };
+  renderAdminTodoMgr();
+  /* focus the textarea after render */
+  setTimeout(() => {
+    const ta = document.getElementById('tbInlineTa');
+    if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+  }, 30);
+}
+function adminTBCloseInline(ev) {
+  if (ev) ev.stopPropagation();
+  _tbInlineEdit = null;
+  renderAdminTodoMgr();
+}
+function adminTBSaveInline(ev) {
+  if (ev) ev.stopPropagation();
+  if (!_tbInlineEdit) return;
+  const { day, dayIdx, di } = _tbInlineEdit;
+  const ta = document.getElementById('tbInlineTa');
+  if (!ta) return;
+  const data = day === 1 ? day1 : day2;
+  if (data[dayIdx]?.duties[di]) {
+    data[dayIdx].duties[di].duty = ta.value;
+    adminSaveRefresh();
+  }
+  _tbInlineEdit = null;
+  renderAdminTodoMgr();
+}
+
+function renderTBBlock(b) {
+  const okCount = b.people.length - b.missing;
+  const isNow = b.dayIdx === getCurrentBlockIndex(b.day);
+  return `
+    <div class="admin-tb-block${b.missing > 0 ? ' has-missing' : ''}${isNow ? ' now' : ''}">
+      <div class="admin-tb-block-hd" onclick="adminJumpToBlock(${b.day}, ${b.dayIdx})" style="cursor:pointer;">
+        ${isNow ? '<span class="admin-now-pill">지금</span>' : ''}
+        <span class="admin-tb-time">${escH(b.time)}</span>
+        <span class="admin-tb-event">${escH(b.event)}</span>
+        <span class="admin-tb-summary">
+          ${b.people.length === 0
+            ? '<span style="color:rgba(245,237,214,0.4);">담당자 없음</span>'
+            : b.missing > 0
+              ? `<span class="ok">${okCount}</span> / ${b.people.length} · <span class="miss">미입력 ${b.missing}</span>`
+              : `<span class="ok">${b.people.length}/${b.people.length} 입력됨</span>`
+          }
+        </span>
+      </div>
+      <div class="admin-tb-people">
+        ${b.people.length === 0
+          ? '<div class="admin-tb-empty">이 시간대에 배정된 담당자가 없습니다</div>'
+          : b.people.map(p => {
+              const editing = _tbInlineEdit
+                && _tbInlineEdit.day === b.day
+                && _tbInlineEdit.dayIdx === b.dayIdx
+                && _tbInlineEdit.di === p.di;
+              if (editing) {
+                return `
+                  <div class="admin-tb-inline">
+                    <div class="admin-tb-inline-hd">
+                      <span class="admin-tb-inline-name">${escH(p.name || '(이름 없음)')}</span>
+                      ${p.role ? `<span class="admin-tb-inline-role">· ${escH(p.role)}</span>` : ''}
+                      <button class="admin-tb-inline-close" onclick="adminTBCloseInline(event)" title="닫기">✕</button>
+                    </div>
+                    <textarea id="tbInlineTa" placeholder="이 시간대 담당 업무를 입력하세요...">${escH(p.duty || '')}</textarea>
+                    <div class="admin-tb-inline-actions">
+                      <button class="jump" onclick="adminJumpToBlock(${b.day}, ${b.dayIdx}); event.stopPropagation();">일정 탭에서 편집</button>
+                      <button class="save" onclick="adminTBSaveInline(event)">저장</button>
+                    </div>
+                    <div class="admin-tb-inline-hint">탭을 옮기지 않고 여기서 바로 입력 가능</div>
+                  </div>`;
+              }
+              return `
+                <div class="admin-tb-person ${p.hasText ? 'has-todos' : 'no-todos'}"
+                  onclick="adminTBOpenInline(${b.day}, ${b.dayIdx}, ${p.di}, event)"
+                  title="${escH(p.duty || '업무 미입력 — 클릭하여 입력')}">
+                  <span class="tp-name">${escH(p.name || '(이름 없음)')}</span>
+                  <span class="tp-role">${escH(p.role || '')}</span>
+                  ${p.hasText
+                    ? `<span class="tp-badge" style="background:#7BC57B;">✓</span>`
+                    : `<span class="tp-warn" title="업무 미입력">!</span>`}
+                </div>`;
+            }).join('')}
+      </div>
+    </div>`;
+}
+
+function setTodoBlockFilter(f) {
+  _todoBlockFilter = f;
+  renderAdminTodoMgr();
+}
+
+function buildTodoEditor() {
+  const todos = getTodos(_adminPerson);
+  /* Build per-person duty list with link back to 일정 tab */
+  const items = [];
+  [day1, day2].forEach((blocks, dayIdx) => {
+    blocks.forEach((b, bi) => {
+      (b.duties||[]).forEach((d, di) => {
+        if (d.name === _adminPerson) {
+          items.push({
+            day: dayIdx+1, bi, di,
+            time: b.time, event: b.event,
+            duty: d.duty, role: d.role,
+            empty: !d.duty || !d.duty.trim()
+          });
+        }
+      });
+    });
+  });
+  return `
+    <div class="admin-todo-person">${escH(_adminPerson)} <span style="font-size:0.7rem;color:rgba(245,237,214,0.4);font-weight:400;letter-spacing:0.04em;">· 업무 ${items.length}건</span></div>
+    <div style="font-size:0.7rem;color:rgba(139,111,212,0.7);background:rgba(139,111,212,0.08);border:1px solid rgba(139,111,212,0.18);border-radius:8px;padding:9px 11px;margin-bottom:10px;line-height:1.5;">
+      ℹ 업무는 <b>일정 탭</b>에서 편집합니다. 여기서는 미리보기만 가능합니다.
+    </div>
+    ${items.length === 0
+      ? '<div style="font-size:0.74rem;color:rgba(245,237,214,0.32);text-align:center;padding:18px 0;">배정된 업무가 없습니다</div>'
+      : items.map(it => `
+        <div class="admin-todo-row" style="cursor:pointer;align-items:flex-start;padding:9px 10px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid ${it.empty ? 'rgba(232,154,111,0.3)' : 'rgba(201,162,39,0.1)'};margin-bottom:6px;"
+          onclick="adminJumpToBlock(${it.day}, ${it.bi})">
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:0.66rem;color:var(--gold);letter-spacing:0.05em;margin-bottom:3px;">
+              ${it.day}일차 · ${escH(it.time)} · ${escH(it.event)}
+            </div>
+            <div style="font-size:0.78rem;color:${it.empty?'rgba(232,154,111,0.85)':'rgba(245,237,214,0.85)'};line-height:1.4;">
+              ${it.empty ? '⚠ 업무 내용 미입력' : escH(it.duty)}
+              ${it.role ? `<span style="font-size:0.62rem;color:rgba(201,162,39,0.55);margin-left:6px;">(${escH(it.role)})</span>` : ''}
+            </div>
+          </div>
+          <span style="font-size:0.85rem;color:rgba(245,237,214,0.3);flex-shrink:0;">›</span>
+        </div>`).join('')}`;
+}
+
+/* Jump from 할일 tab to 일정 tab with target block expanded */
+function adminJumpToBlock(day, bi) {
+  _adminTab = 'tt';
+  _adminDay = day;
+  _expanded.add(`${day}-${bi}`);
+  syncAdminTabs();
+  renderAdminBody();
+  /* scroll to that block */
+  setTimeout(() => {
+    const blocks = document.querySelectorAll('#adminBlockList .admin-block');
+    if (blocks[bi]) blocks[bi].scrollIntoView({behavior:'smooth', block:'start'});
+  }, 80);
+}
+
+/* ─ Notice (공지사항) ─ */
+function getNotices() { return _noticesCache; }
+function saveNotices(items) {
+  _noticesCache = items;
+  localStorage.setItem(NOTICE_KEY, JSON.stringify(items));
+  pushState('notices', items.length ? items : null);
+}
+function updateNoticeSection() {
+  const items = getNotices();
+  const body = document.getElementById('noticeSheetBody');
+  if (!items.length) {
+    body.innerHTML = '<div class="notice-sheet-empty">등록된 공지사항이 없습니다</div>';
+  } else {
+    body.innerHTML = items.map(n =>
+      `<div class="notice-item">${escH(n.text)}<div class="notice-meta" style="margin-left:0;margin-top:6px;">${escH(n.at)} · ${escH(n.author)}</div></div>`
+    ).join('');
+  }
+  /* unread dot */
+  const lastSeen = parseInt(localStorage.getItem('mt2026_notice_seen') || '0', 10);
+  const bell = document.getElementById('noticeBellBtn');
+  if (bell) bell.classList.toggle('has-unread', items.length > lastSeen);
+}
+function renderAdminNotice() {
+  const notices = getNotices();
+  /* newest first */
+  const indexed = notices.map((n, i) => ({ ...n, _i: i })).reverse();
+
+  adminBodyEl.innerHTML = `
+    <div class="admin-stick">
+      <div class="admin-stats">
+        <span><b>${notices.length}</b> 공지</span>
+        ${notices.length > 0 ? `<span>최근: <b>${escH(indexed[0].at)}</b></span>` : ''}
+      </div>
+    </div>
+    <div class="admin-notice-add" style="margin-top:0;margin-bottom:18px;">
+      <textarea class="admin-inp admin-inp-notice" id="adminNoticeInp"
+        placeholder="공지사항 내용을 입력하세요..."
+        oninput="document.getElementById('adminNoticeCount').textContent = this.value.length"></textarea>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+        <span class="admin-notice-counter"><span id="adminNoticeCount">0</span>자</span>
+        <button class="admin-add-notice-btn" onclick="adminAddNotice()" style="flex:1;max-width:200px;">＋ 공지 등록</button>
+      </div>
+    </div>
+    <div class="admin-section-hd">등록된 공지 <span style="color:rgba(245,237,214,0.3);font-weight:400;letter-spacing:0.04em;">최신순</span></div>
+    <div>${indexed.length ? indexed.map(n => `
+      <div class="admin-notice-row" id="adminNoticeRow-${n._i}">
+        <div class="admin-notice-content">
+          <div class="admin-notice-text" id="adminNoticeText-${n._i}">${escH(n.text)}</div>
+          <div class="admin-notice-time">${escH(n.at)} · ${escH(n.author)}</div>
+        </div>
+        <button class="admin-btn-icon" onclick="adminEditNotice(${n._i})" title="수정">✎</button>
+        <button class="admin-btn-icon admin-btn-del" onclick="adminDelNotice(${n._i})" title="삭제">✕</button>
+      </div>`).join('') : '<p class="admin-hint">등록된 공지사항이 없습니다</p>'}
+    </div>`;
+}
+function adminAddNotice() {
+  const inp = document.getElementById('adminNoticeInp');
+  if (!inp?.value.trim()) return;
+  const now = new Date();
+  const at = `${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const notices = getNotices();
+  notices.push({text: inp.value.trim(), at, author: loggedInUser});
+  saveNotices(notices);
+  inp.value = '';
+  renderAdminNotice();
+  updateNoticeSection();
+  showSaveToast();
+}
+function adminDelNotice(i) {
+  if (!confirm('이 공지를 삭제하시겠습니까?')) return;
+  const notices = getNotices();
+  notices.splice(i, 1);
+  saveNotices(notices);
+  renderAdminNotice();
+  updateNoticeSection();
+  showSaveToast();
+}
+function adminEditNotice(i) {
+  const notices = getNotices();
+  const cur = notices[i].text;
+  const next = prompt('공지 내용 수정:', cur);
+  if (next === null) return;
+  const t = next.trim();
+  if (!t) { alert('내용을 입력하세요'); return; }
+  notices[i].text = t;
+  saveNotices(notices);
+  renderAdminNotice();
+  updateNoticeSection();
+  showSaveToast();
+}
+
+/* ─ Settings tab ─ */
+function renderAdminSettings() {
+  const totalDuties = day1.reduce((s,b) => s + (b.duties?.length||0), 0)
+                    + day2.reduce((s,b) => s + (b.duties?.length||0), 0);
+  const totalTodos = nameList.reduce((s,n) => s + (getTodos(n)?.length||0), 0);
+
+  adminBodyEl.innerHTML = `
+    <div class="admin-set-card">
+      <div class="admin-set-card-hd">시뮬레이션 모드</div>
+      <div class="admin-set-card-sub">실제 시간 대신 임의의 시점에서 앱이 어떻게 보일지 확인합니다. 활성화하면 모든 사용자에게 반영됩니다.</div>
+      <div class="admin-sim-row" style="margin-bottom:0;">
+        <label class="view-toggle" style="flex-shrink:0;">
+          <input type="checkbox" id="simModeToggle" ${simMode?'checked':''}
+            onchange="toggleSimMode(this.checked)">
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        </label>
+        <span class="admin-sim-label${simMode?' admin-sim-active':''}">${simMode?'활성화됨':'비활성화'}</span>
+        <input type="datetime-local" class="admin-inp admin-inp-sim" id="simTimeInp"
+          value="${debugNow||''}" ${!simMode?'disabled':''}
+          onchange="setSimTime()">
+      </div>
+    </div>
+
+    <div class="admin-set-card">
+      <div class="admin-set-card-hd">시스템 현황</div>
+      <div class="admin-set-row">
+        <label>총 인원</label>
+        <span style="color:var(--gold);font-weight:600;">${nameList.length}명</span>
+      </div>
+      <div class="admin-set-row">
+        <label>총 시간대</label>
+        <span style="color:var(--gold);font-weight:600;">${day1.length + day2.length}개 (1일차 ${day1.length}, 2일차 ${day2.length})</span>
+      </div>
+      <div class="admin-set-row">
+        <label>총 업무 배정</label>
+        <span style="color:var(--gold);font-weight:600;">${totalDuties}건</span>
+      </div>
+      <div class="admin-set-row">
+        <label>등록된 할일</label>
+        <span style="color:var(--gold);font-weight:600;">${totalTodos}개</span>
+      </div>
+      <div class="admin-set-row">
+        <label>등록된 공지</label>
+        <span style="color:var(--gold);font-weight:600;">${getNotices().length}개</span>
+      </div>
+      <div class="admin-set-row">
+        <label>서버 연결</label>
+        <span style="color:${_apiReady?'#7BC57B':'#FF6B6B'};font-weight:600;">${_apiReady?'● 정상':'● 오프라인'}</span>
+      </div>
+    </div>
+
+    <div class="admin-set-card" style="border-color: rgba(220,70,50,0.2);">
+      <div class="admin-set-card-hd" style="color:#E89A8A;">데이터 초기화</div>
+      <div class="admin-set-card-sub">현재 단말기에 저장된 캐시를 비웁니다. 서버 데이터에는 영향이 없습니다.</div>
+      <button class="admin-tool-btn" style="border-color:rgba(220,70,50,0.32);color:rgba(220,140,120,0.85);" onclick="adminClearLocal()">로컬 캐시 삭제</button>
+    </div>`;
+}
+function adminClearLocal() {
+  if (!confirm('이 단말기의 로컬 캐시를 모두 삭제하시겠습니까?\n(서버 데이터는 유지됩니다)')) return;
+  /* preserve login */
+  const u = localStorage.getItem(STORAGE_KEY);
+  localStorage.clear();
+  if (u) localStorage.setItem(STORAGE_KEY, u);
+  alert('삭제 완료. 페이지를 새로고침합니다.');
+  location.reload();
+}
+
+/* Restore saved session — must run after ADMIN_SET is defined */
+const savedUser = localStorage.getItem(STORAGE_KEY);
+if (savedUser && nameList.includes(savedUser)) doLogin(savedUser);
+</script>
+
+</body>
+</html>

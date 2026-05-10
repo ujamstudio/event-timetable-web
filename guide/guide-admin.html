@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>2026 MT 스텝 웹앱 — 어드민 가이드</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { font-family: 'Noto Sans KR', sans-serif; color: #1A1208; line-height: 1.65; font-size: 10.5pt; }
+  body { background: #fff; }
+
+  h1, h2, h3 { font-family: 'Noto Serif KR', serif; color: #1A1208; }
+  h1 { font-size: 28pt; font-weight: 900; letter-spacing: 0.04em; }
+  h2 {
+    font-size: 16pt; font-weight: 800; margin: 18px 0 10px;
+    padding: 8px 12px;
+    background: linear-gradient(90deg, #1A2744, transparent 80%);
+    color: #fff;
+    border-left: 4px solid #C9A227;
+    page-break-after: avoid;
+  }
+  h3 { font-size: 12pt; font-weight: 700; margin: 14px 0 6px; color: #1A2744; }
+  p { margin-bottom: 8px; }
+  ul, ol { margin: 6px 0 10px 22px; }
+  li { margin-bottom: 4px; }
+
+  .cover {
+    page-break-after: always;
+    height: 240mm;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    background: linear-gradient(180deg, #1A2744 0%, #07101E 100%);
+    border: 2px solid #C9A227;
+    border-radius: 18px;
+    padding: 40px;
+    color: #F4EDD5;
+  }
+  .cover-eyebrow { font-family: 'Noto Serif KR', serif; font-size: 11pt; letter-spacing: 0.32em; color: #C9A227; margin-bottom: 14px; }
+  .cover-title { font-family: 'Noto Serif KR', serif; font-size: 30pt; font-weight: 900; letter-spacing: 0.04em; color: #fff; margin-bottom: 14px; line-height: 1.25; }
+  .cover-sub { font-size: 14pt; color: #C9A227; margin-bottom: 6px; font-weight: 700; }
+  .cover-tag { font-size: 10pt; color: #fff; letter-spacing: 0.2em; }
+  .cover-flower { font-size: 48pt; margin-bottom: 24px; color: #C9A227; }
+  .cover-meta { font-size: 10pt; color: rgba(245,237,214,0.7); margin-top: auto; padding-top: 30px; border-top: 1px solid rgba(201,162,39,0.3); width: 100%; }
+
+  section { page-break-inside: avoid; margin-bottom: 22px; }
+  .section-screen { page-break-after: always; }
+
+  .screenshot {
+    display: inline-block;
+    margin: 14px auto;
+  }
+  .screenshot img {
+    display: block;
+    width: 260px;
+    height: auto;
+  }
+  figure { margin: 12px 0; text-align: center; page-break-inside: avoid; }
+  figcaption { font-size: 9.5pt; color: #6B5530; margin-top: 8px; font-style: italic; }
+
+  .callout {
+    background: #FFF8DC;
+    border-left: 4px solid #C9A227;
+    border-radius: 4px;
+    padding: 10px 14px;
+    margin: 10px 0;
+  }
+  .callout.warn { background: #FFEEE8; border-left-color: #A0291C; }
+  .callout.tip { background: #E8F5E9; border-left-color: #1B5E20; }
+  .callout.info { background: #E8F2FE; border-left-color: #1A4FA0; }
+  .callout.danger { background: #2C0808; border-left-color: #FF6B6B; color: #FFE5E5; }
+  .callout.danger .callout-title { color: #FF6B6B; }
+  .callout-title { font-weight: 700; margin-bottom: 4px; }
+
+  .toc { background: #F0F0FA; border: 1px solid #1A2744; border-radius: 8px; padding: 16px 22px; margin-bottom: 24px; }
+  .toc h2 { background: none; border: none; padding: 0; margin: 0 0 10px; font-size: 13pt; color: #1A2744; }
+  .toc ol { margin-left: 20px; }
+  .toc li { margin-bottom: 3px; }
+
+  code { background: #F0F0FA; padding: 1px 5px; border-radius: 3px; font-size: 9.5pt; font-family: monospace; color: #1A2744; }
+
+  .step-list { counter-reset: step; list-style: none; margin-left: 0; }
+  .step-list li { counter-increment: step; padding-left: 32px; position: relative; margin-bottom: 8px; }
+  .step-list li::before {
+    content: counter(step);
+    position: absolute; left: 0; top: 1px;
+    width: 22px; height: 22px;
+    background: #1A2744; color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 10pt;
+  }
+
+  .arch-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 9.5pt; }
+  .arch-table th, .arch-table td { padding: 7px 11px; border: 1px solid #ccc; text-align: left; vertical-align: top; }
+  .arch-table th { background: #1A2744; color: #fff; font-weight: 700; }
+
+  .footer { margin-top: 30px; padding-top: 14px; border-top: 1px solid #ccc; font-size: 8.5pt; color: #6B5530; text-align: center; }
+  .contact-box {
+    background: #1A2744;
+    border-radius: 12px;
+    padding: 14px 20px;
+    margin: 16px 0;
+    text-align: center;
+    color: #fff;
+  }
+  .contact-box .lead { font-weight: 700; color: #C9A227; margin-bottom: 6px; font-size: 11pt; }
+  .contact-box .num { font-size: 13pt; font-weight: 800; letter-spacing: 0.04em; }
+
+  .admin-only-tag {
+    display: inline-block;
+    background: #A0291C; color: #fff;
+    font-size: 8pt; font-weight: 700;
+    padding: 2px 8px; border-radius: 999px;
+    letter-spacing: 0.1em;
+    vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-flower">⚡</div>
+  <div class="cover-eyebrow">2026 SPRING MT — ADMIN ONLY</div>
+  <h1 class="cover-title">이리 오너라~<br>업고놀자~</h1>
+  <div class="cover-sub">스텝 웹앱 어드민 가이드</div>
+  <div class="cover-tag">— 어드민 전용 —</div>
+  <div class="cover-meta">
+    <strong>대상:</strong> Member05 · Member04 · Member27<br>
+    <small>※ 본 문서는 어드민 권한자만 열람</small>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>목차</h2>
+  <ol>
+    <li>어드민 권한과 책임</li>
+    <li>관리 패널 진입</li>
+    <li>일정 관리 (타임테이블 편집)</li>
+    <li>할일 관리 (사람별 체크리스트)</li>
+    <li>공지사항 작성</li>
+    <li>시뮬레이션 모드 (사전 테스트)</li>
+    <li>비밀번호 초기화</li>
+    <li>시스템 아키텍처</li>
+    <li>장애 대응 / 문의</li>
+  </ol>
+</div>
+
+<!-- 1. ADMIN ROLES -->
+<section>
+<h2>1. 어드민 권한과 책임</h2>
+
+<p><strong>어드민:</strong> Member05 · Member04 · Member27 — 이 3인만 관리 패널 접근 가능.</p>
+
+<h3>1-1. 권한 목록</h3>
+<ul>
+  <li>일정(타임테이블) 추가·수정·삭제</li>
+  <li>각 사람별 할일 등록·수정·삭제</li>
+  <li>공지사항 등록·삭제 (전체 사용자에게 노출)</li>
+  <li>시뮬레이션 시간 설정 (모든 기기에 동기화됨)</li>
+  <li>전체 일정 보기에서 모든 사람의 담당 표시</li>
+</ul>
+
+<h3>1-2. 책임</h3>
+<div class="callout warn">
+  <div class="callout-title">⚠ 모든 변경은 즉시 모든 기기에 반영됩니다</div>
+  편집 전 반드시 의도한 변경인지 확인. 잘못 삭제한 경우 재입력 필요 (롤백 기능 없음).
+</div>
+</section>
+
+<!-- 2. ADMIN PANEL ENTRY -->
+<section>
+<h2>2. 관리 패널 진입</h2>
+
+<ol class="step-list">
+  <li>본인 어드민 계정으로 로그인합니다.</li>
+  <li>탑바 우측에 <strong>관리</strong> 버튼이 표시되어 있는지 확인.</li>
+  <li><strong>관리</strong> 버튼 클릭 → 관리 패널 오버레이 진입.</li>
+</ol>
+
+<figure>
+  <div class="screenshot"><img src="admin.png" alt="관리 패널"></div>
+  <figcaption>관리 패널 — 일정 / 할일 / 공지 / 설정 4개 탭</figcaption>
+</figure>
+
+<div class="callout">
+  <div class="callout-title">📌 비어드민 계정에서는 <strong>관리</strong> 버튼이 보이지 않음</div>
+  CSS와 JS 양쪽에서 권한 체크가 들어가 있어, 비어드민이 우회 접근하는 것을 막습니다.
+</div>
+</section>
+
+<!-- 3. SCHEDULE -->
+<section class="section-screen">
+<h2>3. 일정 관리 (타임테이블 편집)</h2>
+
+<h3>3-1. 시간대 추가</h3>
+<ol class="step-list">
+  <li>1일차 / 2일차 탭 선택.</li>
+  <li>리스트 하단 <strong>+ 시간대 추가</strong> 클릭.</li>
+  <li>시간(HH:MM), 일정명 입력.</li>
+  <li>야간 일정이면 <strong>야간</strong> 체크박스 켜기 (24시 이후 표시 처리에 영향).</li>
+</ol>
+
+<h3>3-2. 담당자 추가/수정</h3>
+<ol class="step-list">
+  <li>해당 시간대의 <strong>업무 편집</strong> 버튼 클릭.</li>
+  <li><strong>+ 담당자 추가하기</strong> 또는 기존 항목 클릭.</li>
+  <li>이름은 자동완성 데이터리스트에서 선택 (오타 방지).</li>
+  <li>직책(role)은 자동 매핑되니 수정 불필요.</li>
+  <li>업무 내용 입력.</li>
+</ol>
+
+<h3>3-3. 시간대 순서 변경</h3>
+<p>각 시간대 우측의 <strong>▲▼</strong> 버튼으로 순서 조정. 시간(HH:MM) 자체는 별도 입력해야 함.</p>
+
+<h3>3-4. 시간대 / 담당자 삭제</h3>
+<p>휴지통 🗑 아이콘 클릭. 확인 모달 없이 즉시 삭제되니 신중히.</p>
+
+<div class="callout warn">
+  <div class="callout-title">⚠ 담당자 0명 시간대는 경고 표시</div>
+  상단에 <code>⚠ N개 시간대 담당자 없음</code> 배너로 알림. 의도된 경우(이동 시간 등)는 무시 가능.
+</div>
+</section>
+
+<!-- 4. TODOS -->
+<section>
+<h2>4. 할일 관리</h2>
+
+<h3>4-1. 사람별 할일 등록</h3>
+<ol class="step-list">
+  <li>관리 패널 → <strong>할일</strong> 탭.</li>
+  <li>좌측 사람 목록에서 대상 선택.</li>
+  <li>우측 편집기에서 할일 항목 추가/수정/삭제.</li>
+</ol>
+
+<h3>4-2. 사용자가 보는 위치</h3>
+<p>할일 체크리스트는 메인 대시보드에서 제거되었으나, 데이터는 어드민 측에서 관리·확인 가능.</p>
+</section>
+
+<!-- 5. NOTICES -->
+<section>
+<h2>5. 공지사항 작성</h2>
+
+<ol class="step-list">
+  <li>관리 패널 → <strong>공지</strong> 탭.</li>
+  <li>하단 텍스트 영역에 공지 내용 입력.</li>
+  <li><strong>공지 등록</strong> 버튼 클릭.</li>
+  <li>전체 사용자 대시보드 상단에 5초 내 노출.</li>
+</ol>
+
+<h3>공지 작성 권장 형식</h3>
+<ul>
+  <li>한 줄 요약 + 시간/장소 명시</li>
+  <li>예: <em>"19:00 강당 집결 — 리허설 시작 전 인원 점호"</em></li>
+  <li>긴 내용은 카톡/문자로 보내고, 공지는 헤드라인만</li>
+</ul>
+</section>
+
+<!-- 6. SIMULATION -->
+<section class="section-screen">
+<h2>6. 시뮬레이션 모드 (사전 테스트)</h2>
+
+<p>실제 시간이 아니라 <strong>가상 시간</strong>으로 앱 동작을 미리 확인할 수 있습니다.</p>
+
+<h3>6-1. 사용 절차</h3>
+<ol class="step-list">
+  <li>관리 패널 → 일정 탭.</li>
+  <li>상단 <strong>시뮬레이션 모드</strong> 토글 ON.</li>
+  <li>날짜·시간 선택 (예: 2026-05-08 16:30).</li>
+  <li>대시보드/타임테이블이 해당 시각 기준으로 업데이트됨.</li>
+</ol>
+
+<h3>6-2. 중요</h3>
+<div class="callout danger">
+  <div class="callout-title">🚨 시뮬레이션은 모든 기기에 동기화됩니다</div>
+  본인이 ON 했을 때 다른 사용자도 시뮬레이션 시간을 보게 됩니다.
+  <br><strong>행사 당일에는 반드시 OFF 상태로 두세요.</strong>
+</div>
+
+<h3>6-3. 종료</h3>
+<p>토글을 OFF로 변경하면 즉시 실제 시간으로 복귀.</p>
+</section>
+
+<!-- 7. PASSWORD RESET -->
+<section>
+<h2>7. 비밀번호 초기화</h2>
+
+<p>사용자가 비밀번호를 잊었을 때 어드민이 직접 초기화 가능.</p>
+
+<h3>7-1. 방법</h3>
+<p>현재 GUI에는 직접적인 초기화 버튼이 없습니다. AWS 콘솔 또는 다음 절차로 초기화합니다.</p>
+
+<ol class="step-list">
+  <li>기획국 Member05(010-XXXX-XXXX)에게 초기화 요청 전달.</li>
+  <li>관리자가 DynamoDB에서 해당 사용자의 비밀번호 항목 삭제.</li>
+  <li>다음 로그인부터 기본 비밀번호 <code>abc123!</code> 사용 가능.</li>
+</ol>
+
+<h3>7-2. 비밀번호 저장 방식</h3>
+<ul>
+  <li>SHA-256 + 솔트(이름) 해시로 저장</li>
+  <li>서버에는 평문 비밀번호가 저장되지 않음</li>
+  <li>해시 충돌 우려 없음 (실질적으로 0%)</li>
+</ul>
+</section>
+
+<!-- 8. ARCHITECTURE -->
+<section class="section-screen">
+<h2>8. 시스템 아키텍처</h2>
+
+<h3>8-1. 구성도</h3>
+<pre style="background:#F0F0FA; padding: 14px; border-radius:8px; font-size:9.5pt; line-height:1.6; overflow-x:auto;">
+[브라우저]
+   │ 5초 폴링 (GET) / 변경 시 PUT
+   ▼
+[API Gateway HTTP API]
+   YOUR-API-ID.execute-api.YOUR-REGION.amazonaws.com
+   │
+   ▼
+[Lambda: YOUR-LAMBDA-NAME]
+   Node.js 20.x · 128MB · 10s timeout
+   │
+   ▼
+[DynamoDB: YOUR-TABLE-NAME]
+   파티션 키: dataKey
+   PAY_PER_REQUEST
+
+[S3: YOUR-S3-BUCKET]
+   정적 호스팅 (HTTPS)
+</pre>
+
+<h3>8-2. 동기화 키</h3>
+<table class="arch-table">
+  <thead>
+    <tr><th>키</th><th>내용</th><th>쓰기 권한</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>schedule</code></td><td>1일차/2일차 일정·담당자</td><td>어드민</td></tr>
+    <tr><td><code>notices</code></td><td>공지사항 배열</td><td>어드민</td></tr>
+    <tr><td><code>todos</code></td><td>사람별 할일</td><td>어드민</td></tr>
+    <tr><td><code>passwords</code></td><td>비밀번호 해시 맵</td><td>각 사용자 본인</td></tr>
+    <tr><td><code>sim</code></td><td>시뮬레이션 시간 상태</td><td>어드민</td></tr>
+  </tbody>
+</table>
+
+<h3>8-3. 비용</h3>
+<ul>
+  <li>DynamoDB on-demand: 행사 당일 약 $1 미만</li>
+  <li>Lambda · API Gateway: 무료 티어 내</li>
+  <li>S3: 무시할 수준</li>
+</ul>
+</section>
+
+<!-- 9. TROUBLESHOOTING -->
+<section>
+<h2>9. 장애 대응 / 문의</h2>
+
+<h3>9-1. 자주 발생하는 이슈</h3>
+
+<p><strong>Q. 사용자가 "비밀번호가 맞지 않습니다" 호소.</strong></p>
+<ul>
+  <li>1-2초 후 재시도 안내 (서버 동기화 대기)</li>
+  <li>그래도 실패 → 브라우저 캐시 삭제 + 새로고침</li>
+  <li>위 모두 실패 → 비밀번호 초기화 (7장 참조)</li>
+</ul>
+
+<p><strong>Q. 일정 변경이 다른 기기에 안 보임.</strong></p>
+<ul>
+  <li>해당 기기 새로고침 (5초 내 자동 반영되어야 정상)</li>
+  <li>탑바에 "오프라인" 표시면 인터넷 확인</li>
+</ul>
+
+<p><strong>Q. 어드민이 관리 버튼이 안 보임.</strong></p>
+<ul>
+  <li>본인 계정이 ADMIN_SET에 포함되어 있는지 확인 (Member05 / Member04 / Member27)</li>
+  <li>로그아웃 → 재로그인</li>
+</ul>
+
+<p><strong>Q. 시뮬레이션 모드 끈 후에도 다른 기기는 시뮬 시간으로 보임.</strong></p>
+<ul>
+  <li>최대 5초 대기 (다음 폴링까지)</li>
+  <li>그래도 안 풀리면 새로고침</li>
+</ul>
+
+<h3>9-2. 데이터 백업</h3>
+<p>DynamoDB는 자동 백업 미설정. 행사 직전 수동 export 권장:</p>
+<pre style="background:#F0F0FA; padding: 10px; border-radius:6px; font-size:9pt;">
+aws dynamodb scan --table-name YOUR-TABLE-NAME \
+  --region ap-northeast-2 --output json > backup.json
+</pre>
+</section>
+
+<div class="contact-box">
+  <div class="lead">웹/시스템 문의</div>
+  <div class="num">기획국 Member05 · 010-XXXX-XXXX</div>
+  <div style="margin-top:8px; font-size:9pt; opacity:0.85;">긴급 장애 시 즉시 통화</div>
+</div>
+
+<div class="footer">
+  2026 봄 MT — 이리 오너라~ 업고놀자~ · 스텝 웹앱 어드민 가이드 v2.0<br>
+  ⚠ 본 문서는 어드민 외부 유출 금지
+</div>
+
+</body>
+</html>
